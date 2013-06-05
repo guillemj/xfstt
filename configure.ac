@@ -9,10 +9,8 @@ AC_CONFIG_SRCDIR([src/xfstt.cc])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 
-AM_INIT_AUTOMAKE([foreign 1.5])
-
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])],
-                            [AC_SUBST([AM_DEFAULT_VERBOSITY], [1])])
+AM_INIT_AUTOMAKE([1.11 foreign])
+AM_SILENT_RULES([yes])
 
 AC_ARG_WITH([xcb],
             [AS_HELP_STRING([--with-xcb], [enable tools using XCB])],
