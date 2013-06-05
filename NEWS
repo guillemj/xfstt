@@ -1,3 +1,7 @@
+HEAD (git)
+
+	Bump gettext dependency to 0.18.2.
+
 1.9 (2012-05-02)
 
 	Fix file descriptor leaks.
