@@ -3,6 +3,7 @@ HEAD (git)
 	Bump gettext dependency to 0.18.2.
 	Bump automake version to 1.11.
 	Switch from gzip to xz for distribution tarballs.
+	Update upstream project URLs to the new site.
 
 1.9 (2012-05-02)
 

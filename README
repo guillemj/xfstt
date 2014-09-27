@@ -8,7 +8,7 @@ fonts for low resolution devices like displays.
 Releases
 --------
 
-  <http://download.berlios.de/xfstt/>
+  <http://archive.hadrons.org/software/xfstt/>
 
 
 Project Site
@@ -16,11 +16,11 @@ Project Site
 
 The bug tracker, news, and the general project management can be found at:
 
-  <http://developer.berlios.de/projects/xfstt/>
+  <http://www.hadrons.org/software/xfstt/>
 
 
 Source Repository
 -----------------
 
-  <http://git.berlios.de/cgi-bin/cgit.cgi/xfstt>
-  <git://git.berlios.de/xfstt>
+  <http://git.hadrons.org/?p=xfstt.git>
+  <git://git.hadrons.org/git/xfstt.git>
