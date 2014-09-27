@@ -1,4 +1,4 @@
-HEAD (git)
+1.9.1 (2014-09-27)
 
 	Bump gettext dependency to 0.18.2.
 	Bump automake version to 1.11.
