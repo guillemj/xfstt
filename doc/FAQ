@@ -58,7 +58,7 @@ This FAQ is current as of version 1.9.1 of xfstt.
 
 	Examples where good scalable fonts improve the visual quality
 	considerably are Netscape™, gimp and Java™.
-	A fonts.properties file for use with java is provided.
+	A fonts.properties file for use with Java AWT is provided.
 
 	Xfstt is freely available under the LGPL. This basically means:
 	Use it for free; if you fix bugs you have to contribute the
