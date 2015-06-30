@@ -5,6 +5,7 @@ HEAD (git)
 	 · Switch source browser URL to use cgit.
 	Build system:
 	 · Enable system extensions.
+	 · Enable LFS with AC_SYS_LARGEFILE.
 	 · Use AM_PROG_AR to detect the correct archiver to use.
 
 1.9.1 (2014-09-27)

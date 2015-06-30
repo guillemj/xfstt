@@ -58,6 +58,7 @@ AC_TYPE_UID_T
 AC_TYPE_MODE_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
+AC_SYS_LARGEFILE
 
 # Checks for library functions.
 AC_FUNC_FORK
