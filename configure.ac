@@ -21,6 +21,7 @@ AC_ARG_WITH([xcb],
 AM_CONDITIONAL(WITH_XCB, [test "x$with_xcb" != "xno"])
 
 # Checks for programs.
+AM_PROG_AR
 AC_PROG_CXX
 AC_PROG_CXXCPP
 AC_PROG_INSTALL
