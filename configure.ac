@@ -9,7 +9,7 @@ AC_CONFIG_SRCDIR([src/xfstt.cc])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
 
-AM_INIT_AUTOMAKE([1.11 foreign no-dist-gzip dist-xz])
+AM_INIT_AUTOMAKE([1.11 -Wall foreign no-dist-gzip dist-xz])
 AM_SILENT_RULES([yes])
 
 AC_ARG_WITH([xcb],
