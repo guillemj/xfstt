@@ -3,6 +3,8 @@ HEAD (git)
 	Documentation:
 	 · Update Jave AWT font.properties example.
 	 · Switch source browser URL to use cgit.
+	Build system:
+	 · Enable system extensions.
 
 1.9.1 (2014-09-27)
 
