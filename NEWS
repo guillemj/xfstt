@@ -3,6 +3,7 @@ HEAD (git)
 	Documentation:
 	 · Update Jave AWT font.properties example.
 	 · Switch source browser URL to use cgit.
+	 · Remove obsolete LSM file.
 	Build system:
 	 · Enable system extensions.
 	 · Enable LFS with AC_SYS_LARGEFILE.

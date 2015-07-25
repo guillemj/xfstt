@@ -11,7 +11,7 @@ pidfile = $(localstatedir)/run/xfstt.pid
 
 man_MANS = xfstt.1x
 
-EXTRA_DIST = xfstt.1x.in xfstt.lsm FAQ examples
+EXTRA_DIST = xfstt.1x.in FAQ examples
 CLEANFILES = $(man_MANS)
 
 edit = sed \
