@@ -8,6 +8,7 @@ HEAD (git)
 	 · Enable system extensions.
 	 · Enable LFS with AC_SYS_LARGEFILE.
 	 · Use AM_PROG_AR to detect the correct archiver to use.
+	 · Bump gettext dependency to 0.19.
 
 1.9.1 (2014-09-27)
 
