@@ -412,7 +412,7 @@ TTFont::getXLFDbase(string xlfd_templ)
 	if (strFamily.empty())
 		strFamily = "unknown";
 
-	if (strFamily.empty())
+	if (strSubFamily.empty())
 		strSubFamily = "tt";
 
 	std::replace(strFamily.begin(), strFamily.end(), '-', ' ');
