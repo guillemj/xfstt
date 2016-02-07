@@ -1,0 +1,21 @@
+language: generic
+sudo: required
+services: docker
+env:
+  global:
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    # via the "travis encrypt" command using the project repo's public key.
+    - secure: "EH4eHoJGLlNfNkeoyErZ36wfMljleflFuTeaSI20VoarR63WI70mTLTUa3QkyPdQejn9kvPyIou0MlIHAnTY0APD6yX10LIZkRdAfvaSaxAs79lLa5eGv5stiOqnm7OzX+yvbTzyYJH4RXpwwfGH8LA0jOwQKK+MvlG8OMZmO4M="
+    - COVERITY_SCAN_SCRIPT_URL="https://scan.coverity.com/scripts/travisci_build_coverity_scan.sh"
+    - COVERITY_SCAN_PROJECT_NAME="$TRAVIS_REPO_SLUG"
+    - COVERITY_SCAN_BRANCH_PATTERN="coverity_scan"
+    - COVERITY_SCAN_NOTIFICATION_EMAIL="guillem@hadrons.org"
+    - COVERITY_SCAN_BUILD_COMMAND="make"
+    - COVERITY_SCAN_BUILD_COMMAND_PREPEND="./autogen && ./configure"
+before_install:
+  - docker build -t $TRAVIS_REPO_SLUG/debian:buster .travis/
+  - env | grep -E "TRAVIS|COV" >.travis/cov-env
+script:
+  - docker run --env-file .travis/cov-env
+    -v `pwd`:/build $TRAVIS_REPO_SLUG/debian:buster
+    sh -c "curl -s $COVERITY_SCAN_SCRIPT_URL | bash || true"
