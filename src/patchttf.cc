@@ -19,10 +19,13 @@
 
 #include "config.h"
 
+#include <string>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
+
+using std::string;
 
 static void
 usage()
@@ -49,25 +52,25 @@ checksum(uint8_t *buf, int len)
 static int
 patchttf(int argc, char **argv)
 {
-	char inTTname[160], outTTname[160];
+	string inTTname, outTTname;
 
 	if (argc < 2)
 		return -1;
-	strcpy(inTTname, argv[1]);
-	strcpy(outTTname, FONTDIR);
-	strcat(outTTname, inTTname);
 
-	printf("i = %s\no = %s\n", inTTname, outTTname);
+	inTTname = argv[1];
+	outTTname = FONTDIR + inTTname;
+
+	printf("i = %s\no = %s\n", inTTname.c_str(), outTTname.c_str());
 
 	// read the stuff
-	FILE *fp = fopen(inTTname, "rb");
+	FILE *fp = fopen(inTTname.c_str(), "rb");
 	if (!fp) {
-		printf("Cannot read \"%s\"\n", inTTname);
+		printf("Cannot read \"%s\"\n", inTTname.c_str());
 		return -1;
 	}
 
 	struct stat st;
-	stat(inTTname, &st);
+	stat(inTTname.c_str(), &st);
 	int flen = st.st_size;
 	uint8_t *buf = new uint8_t[flen + 3];
 	for (int ibuf = 0; ibuf < 3; ++ibuf)
@@ -142,9 +145,9 @@ patchttf(int argc, char **argv)
 	headTable[11] = (uint8_t)check;
 
 	// write the patched file
-	fp = fopen(outTTname, "wb");
+	fp = fopen(outTTname.c_str(), "wb");
 	if (!fp) {
-		printf("Cannot write \"%s\"\n", outTTname);
+		printf("Cannot write \"%s\"\n", outTTname.c_str());
 		return -1;
 	}
 	fwrite(buf, 1, flen, fp);
