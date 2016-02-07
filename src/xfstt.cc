@@ -214,7 +214,7 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 		sprintf(pathName, "%s/%s", ttdir, de->d_name);
 
 		TTFont *ttFont = new TTFont(de->d_name, 1);
-		if (ttFont->badFont() || !ttFont) {
+		if (!ttFont || ttFont->badFont()) {
 			delete ttFont;
 			continue;
 		}
