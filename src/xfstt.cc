@@ -222,7 +222,7 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 		FontInfo fi;
 		ttFont->getFontInfo(&fi);
 
-		TTFNdata info;
+		TTFNdata info = { 0 };
 		info.nameOfs = ftell(nameFile);
 		info.nameLen = fi.faceLength;
 		info.pathLen = strlen(pathName);
@@ -1113,7 +1113,7 @@ fs_connecting(fs_client &client)
 		return 0;
 	}
 
-	fsConnSetup replySetup;
+	fsConnSetup replySetup = { 0 };
 	replySetup.status = 0;
 	replySetup.major_version = 2;
 	replySetup.minor_version = 0;
@@ -1127,7 +1127,7 @@ fs_connecting(fs_client &client)
 	struct {
 		fsConnSetupAccept s1;
 		char vendor[2], pad[2];
-	} replyAccept;
+	} replyAccept = { 0 };
 
 	replyAccept.s1.length = (sizeof(replyAccept) + 3) >> 2;
 	replyAccept.s1.max_request_len = MAXREQSIZE >> 2;
@@ -1231,7 +1231,7 @@ fixup_bitmap(FontExtent *fe, uint32_t hint)
 static int
 fs_client_error(fs_client &client, int error)
 {
-	fsError reply;
+	fsError reply = { 0 };
 
 	reply.type = FS_Error;
 	reply.request = error;
@@ -1321,7 +1321,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 		case FS_ListExtensions:
 			debug("FS_ListExtensions\n");
 			{
-			fsListExtensionsReply reply;
+			fsListExtensionsReply reply = { 0 };
 			reply.type = FS_Reply;
 			reply.nExtensions = 0;
 			reply.sequenceNumber = client.seqno;
@@ -1334,7 +1334,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 		case FS_QueryExtension:
 			debug("FS_QueryExtension\n");
 			{
-			fsQueryExtensionReply reply;
+			fsQueryExtensionReply reply = { 0 };
 			reply.type = FS_Reply;
 			reply.present = 0;
 			reply.sequenceNumber = client.seqno;
@@ -1354,7 +1354,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 		case FS_ListCatalogues:
 			debug("FS_ListCatalogues\n");
 			{
-			fsListCataloguesReply reply;
+			fsListCataloguesReply reply = { 0 };
 			reply.type = FS_Reply;
 			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
@@ -1373,7 +1373,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 		case FS_GetCatalogues:
 			debug("FS_GetCatalogues\n");
 			{
-			fsGetCataloguesReply reply;
+			fsGetCataloguesReply reply = { 0 };
 			reply.type = FS_Reply;
 			reply.num_catalogues = 0;
 			reply.sequenceNumber = client.seqno;
@@ -1394,7 +1394,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 		case FS_GetEventMask:
 			debug("FS_GetEventMask = %04X\n", client.event_mask);
 			{
-			fsGetEventMaskReply reply;
+			fsGetEventMaskReply reply = { 0 };
 			reply.type = FS_Reply;
 			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
@@ -1407,7 +1407,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 		case FS_CreateAC:		// don't care
 			debug("FS_CreateAC\n");
 			{
-			fsCreateACReply reply;
+			fsCreateACReply reply = { 0 };
 			reply.type = FS_Reply;
 			reply.auth_index = 0;
 			reply.sequenceNumber = client.seqno;
@@ -1421,7 +1421,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 		case FS_FreeAC:			// don't care
 			debug("FS_FreeAC\n");
 			{
-			fsGenericReply reply;
+			fsGenericReply reply = { 0 };
 			reply.type = FS_Reply;
 			reply.sequenceNumber = client.seqno;
 			reply.length = sizeof(reply) >> 2;
@@ -1469,7 +1469,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 				fsGetResolutionReply s1;
 				fsResolution s2;
 				char pad[2];
-			} reply;
+			} reply = { 0 };
 
 			reply.s1.type = FS_Reply;
 			reply.s1.num_resolutions = 1;
@@ -1497,7 +1497,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 			debug("FS_ListFonts \"%s\" * %ld\n",
 			      pattern, req->maxNames);
 
-			fsListFontsReply reply;
+			fsListFontsReply reply = { 0 };
 			reply.type = FS_Reply;
 			reply.sequenceNumber = client.seqno;
 			// XXX: XFree doesn't handle split up replies yet
@@ -1548,7 +1548,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 			{
 // XFSTT_X_COMPLIANT
 #if 0
-			fsListFontsWithXInfoReply reply;
+			fsListFontsWithXInfoReply reply = { 0 };
 			reply.type = FS_Reply;
 			reply.nameLength = 0;
 			reply.sequenceNumber = client.seqno;
@@ -1576,7 +1576,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 			fp = fp0;
 			if (openTTFN(raster, fontName, &fp, req->fid)
 			    || openXLFD(raster, fontName, &fp, req->fid)) {
-				fsOpenBitmapFontReply reply;
+				fsOpenBitmapFontReply reply = { 0 };
 				reply.type = FS_Reply;
 				reply.otherid_valid = fsFalse;
 				reply.sequenceNumber = client.seqno;
@@ -1605,7 +1605,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 				fsPropInfo s2;
 				fsPropOffset s3;
 				uint32_t dummyName, dummyValue;
-			} reply;
+			} reply = { 0 };
 
 			reply.s1.type = FS_Reply;
 			reply.s1.sequenceNumber = client.seqno;
@@ -1735,7 +1735,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 				while (--nranges >= 0)
 					(ext++)->left = ntohs(*(ptr++));
 
-			fsQueryXExtents16Reply reply;
+			fsQueryXExtents16Reply reply = { 0 };
 			reply.type = FS_Reply;
 			reply.sequenceNumber = client.seqno;
 			reply.num_extents = ext - ext0;
@@ -1836,7 +1836,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 				while (--nranges >= 0)
 					(ofs++)->position = ntohs(*(ptr++));
 
-			fsQueryXBitmaps16Reply reply;
+			fsQueryXBitmaps16Reply reply = { 0 };
 			reply.type = FS_Reply;
 			reply.sequenceNumber = client.seqno;
 			reply.num_chars = ofs - ofs0;
