@@ -975,6 +975,11 @@ fs_connection_setup(fs_conn &conn)
 
 		// prepare unix connection
 		sd = socket(PF_UNIX, SOCK_STREAM, 0);
+		if (sd < 0) {
+			error(_("cannot create Unix socket; %s!\n"),
+			      strerror(errno));
+			return -1;
+		}
 
 		s_unix.sun_family = AF_UNIX;
 		sprintf(s_unix.sun_path, "%s/fs%d", sockdir, conn.port);
