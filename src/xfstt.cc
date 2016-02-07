@@ -314,14 +314,14 @@ ttSyncAll(bool gslist = false)
 		return -1;
 	char *ttnamefilename = cachefile(TTNAME_LEAF);
 	if (!ttnamefilename) {
-		delete ttinfofilename;
+		delete [] ttinfofilename;
 		return -1;
 	}
 
 	FILE *infoFile = fopen(ttinfofilename, "wb");
 	FILE *nameFile = fopen(ttnamefilename, "wb");
-	delete ttinfofilename;
-	delete ttnamefilename;
+	delete [] ttinfofilename;
+	delete [] ttnamefilename;
 
 	if (infoFile == NULL || nameFile == NULL) {
 		if (infoFile)
