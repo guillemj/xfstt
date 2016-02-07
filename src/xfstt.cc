@@ -333,12 +333,12 @@ ttSyncAll(bool gslist = false)
 	}
 
 	TTFNheader info;
-	strncpy(info.magic, "TTFN", 4);
+	memcpy(info.magic, "TTFN", 4);
 	info.version = TTFN_VERSION;
 	info.crc = 0;	// XXX
-	strncpy(info.type, "INFO", 4);
+	memcpy(info.type, "INFO", 4);
 	fwrite((void *)&info, 1, sizeof(info), infoFile);
-	strncpy(info.type, "NAME", 4);
+	memcpy(info.type, "NAME", 4);
 	fwrite((void *)&info, 1, sizeof(info), nameFile);
 
 	int nfonts = ttSyncDir(infoFile, nameFile, ".", gslist);
