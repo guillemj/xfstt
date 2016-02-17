@@ -803,7 +803,7 @@ openTTFdb()
 	}
 
 	struct stat statbuf;
-	stat(ttinfofilename, &statbuf);
+	fstat(fd, &statbuf);
 	infoSize = statbuf.st_size;
 	infoBase = (char *)mmap(0L, infoSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
@@ -836,7 +836,7 @@ openTTFdb()
 		return 0;
 	}
 
-	stat(ttnamefilename, &statbuf);
+	fstat(fd, &statbuf);
 	nameSize = statbuf.st_size;
 	nameBase = (char *)mmap(0L, nameSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
