@@ -285,12 +285,6 @@ cachefile(const char *leafname)
 	}
 
 	long len = strlen(cachedir) + strlen(leafname) + 2;
-	long maxlen = pathconf(cachedir, _PC_PATH_MAX);
-
-	if (maxlen != -1 && len > maxlen) {
-		error(_("cache directory name is too long.\n"));
-		return 0;
-	}
 
 	char *buf = new char [len];
 	sprintf(buf, "%s/%s", cachedir, leafname);
