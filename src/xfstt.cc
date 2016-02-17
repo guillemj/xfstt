@@ -810,7 +810,7 @@ openTTFdb()
 	int fd = open(ttinfofilename, O_RDONLY);
 	if (fd < 0) {
 		error(_("cannot open font database!\n"));
-		delete ttinfofilename;
+		delete [] ttinfofilename;
 		return 0;
 	}
 
@@ -819,7 +819,7 @@ openTTFdb()
 	infoSize = statbuf.st_size;
 	infoBase = (char *)mmap(0L, infoSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
-	delete ttinfofilename;
+	delete [] ttinfofilename;
 
 	if (infoBase == MAP_FAILED) {
 		error(_("cannot mmap font database!\n"));
@@ -844,7 +844,7 @@ openTTFdb()
 	fd = open(ttnamefilename, O_RDONLY);
 	if (fd < 0) {
 		error(_("cannot open font database!\n"));
-		delete ttnamefilename;
+		delete [] ttnamefilename;
 		return 0;
 	}
 
@@ -852,7 +852,7 @@ openTTFdb()
 	nameSize = statbuf.st_size;
 	nameBase = (char *)mmap(0L, nameSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
-	delete ttnamefilename;
+	delete [] ttnamefilename;
 
 	if (nameBase == MAP_FAILED) {
 		error(_("cannot mmap font database!\n"));
