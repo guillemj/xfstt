@@ -338,8 +338,11 @@ ttSyncAll(bool gslist = false)
 	int nfonts = ttSyncDir(infoFile, nameFile, ".", gslist);
 
 	DIR *dirp = opendir(".");
-	if (dirp == NULL)
+	if (dirp == NULL) {
+		fclose(infoFile);
+		fclose(nameFile);
 		return 0;
+	}
 
 	while (dirent *de = readdir(dirp)) {
 		chdir(fontdir);
