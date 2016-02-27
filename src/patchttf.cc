@@ -70,14 +70,21 @@ patchttf(int argc, char **argv)
 	}
 
 	struct stat st;
-	stat(inTTname.c_str(), &st);
+	if (fstat(fileno(fp), &st) < 0) {
+		printf("Cannot stat \"%s\"\n", inTTname.c_str());
+		return -1;
+	}
+
 	int flen = st.st_size;
 	uint8_t *buf = new uint8_t[flen + 3];
 	for (int ibuf = 0; ibuf < 3; ++ibuf)
 		buf[flen + ibuf] = 0;
 	printf("TTFsize = %d\n", flen);
 
-	fread(buf, 1, flen, fp);
+	if (fread(buf, 1, flen, fp) != flen) {
+		printf("Cannot read \"%s\"\n", inTTname.c_str());
+		return -1;
+	}
 	fclose(fp);
 
 	// patch as requested
@@ -150,7 +157,11 @@ patchttf(int argc, char **argv)
 		printf("Cannot write \"%s\"\n", outTTname.c_str());
 		return -1;
 	}
-	fwrite(buf, 1, flen, fp);
+	if (fwrite(buf, 1, flen, fp) != flen) {
+		printf("Cannot write \"%s\"\n", outTTname.c_str());
+		return -1;
+	}
+
 	fclose(fp);
 
 	delete[] buf;

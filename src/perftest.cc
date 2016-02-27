@@ -63,7 +63,8 @@ ttPerfDir(Rasterizer *raster, int pt, FontExtent *fe, const char *ttdir)
 			continue;
 
 		struct stat statbuf;
-		stat(de->d_name, &statbuf);
+		if (stat(de->d_name, &statbuf) < 0)
+			continue;
 		if (!S_ISREG(statbuf.st_mode))
 			continue;
 

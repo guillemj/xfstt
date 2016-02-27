@@ -171,7 +171,11 @@ RandomAccessFile::RandomAccessFile(const char *fileName)
 		return;
 	}
 	struct stat st;
-	fstat(fd, &st);
+	if (fstat(fd, &st) < 0) {
+		debug("Cannot stat \"%s\"\n", fileName);
+		ptr = absbase = base = 0;
+		return;
+	}
 	length = st.st_size;
 	base = (uint8_t *)mmap(0L, length, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);

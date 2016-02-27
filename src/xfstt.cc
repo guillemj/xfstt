@@ -206,7 +206,8 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 			continue;
 
 		struct stat statbuf;
-		stat(de->d_name, &statbuf);
+		if (stat(de->d_name, &statbuf) < 0)
+			continue;
 		if (!S_ISREG(statbuf.st_mode))
 			continue;
 
@@ -803,7 +804,10 @@ openTTFdb()
 	}
 
 	struct stat statbuf;
-	fstat(fd, &statbuf);
+	if (fstat(fd, &statbuf) < 0) {
+		error(_("cannot stat fond database!\n"));
+		return 0;
+	}
 	infoSize = statbuf.st_size;
 	infoBase = (char *)mmap(0L, infoSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
@@ -836,7 +840,10 @@ openTTFdb()
 		return 0;
 	}
 
-	fstat(fd, &statbuf);
+	if (fstat(fd, &statbuf) < 0) {
+		error(_("cannot stat font database!\n"));
+		return 0;
+	}
 	nameSize = statbuf.st_size;
 	nameBase = (char *)mmap(0L, nameSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
@@ -951,7 +958,10 @@ fs_connection_setup(fs_conn &conn)
 		sockname = s_unix.sun_path;
 
 		old_umask = umask(0);
-		mkdir(sockdir, 01777);
+		if (mkdir(sockdir, 01777) < 0) {
+			error(_("cannot make socket directory %s!\n"), sockdir);
+			return -1;
+		}
 		unlink(s_unix.sun_path);
 
 		if (bind(sd, (struct sockaddr *)&s_unix, sizeof(s_unix)) < 0) {
