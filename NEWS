@@ -1,3 +1,17 @@
+1.9.3 (2016-05-23)
+
+	Documentation:
+	 · Switch to https for hadrons.org URLs.
+	Code cleanup:
+	 · Check strSubFamily for emptiness when assigning it.
+	 · Use matching delete [] operator for new [].
+	 · Use std::string instead of static buffers.
+	 · Check error failures from socket() call.
+	 · Do no dereference TTFont variable before using it.
+	 · Use memcpy() instead of strncpy() to copy a fixed-length string.
+	 · Initialize structs that go over the wire to 0.
+	 · Remove pathname length check.
+
 1.9.2 (2015-08-11)
 
 	Documentation:
