@@ -200,7 +200,7 @@ struct Point {
 struct FontInfo {
 	uint16_t firstChar, lastChar;
 	uint8_t panose[10];
-	int	faceLength;
+	size_t faceLength;
 	char	faceName[32];
 };
 
