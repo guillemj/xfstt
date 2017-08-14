@@ -330,19 +330,8 @@ GraphicsState::recalc()
 inline void
 Rasterizer::execOpcode(RandomAccessFile* const f)
 {
-	// optimisation question: how does one convince
-	// g++ to keep the "this" pointer in a register?
-	// all that is needed to make hinting really fast
-	// is keeping these variables in registers
-	// 1) this 2) m 3) n,
-	// keeping i and pp in registers would help too.
-	//
-	// While I'm at it: Why the heck does g++/egcs/pgcc take
-	// a much bigger (up to 5K) stack frame than it really
-	// needs? MS VC++ code only grabs 40 bytes!
-
-	register int m;
-	register Point *pp;
+	int m;
+	Point *pp;
 	int n;
 
 	assert(stack >= stackbase);

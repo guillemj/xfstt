@@ -1147,7 +1147,7 @@ fixup_bitmap(FontExtent *fe, uint32_t hint)
 	if ((hint ^ fe->bmpFormat) == 0)
 		return;
 
-	register uint8_t *p, *end = fe->bitmaps + fe->bmplen;
+	uint8_t *p, *end = fe->bitmaps + fe->bmplen;
 	if ((fe->bmpFormat ^ hint) & BitmapFormatMaskByte) {
 		debug("slpswap SLP=%d\n", LOGSLP);
 		p = fe->bitmaps;

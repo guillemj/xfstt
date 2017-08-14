@@ -293,7 +293,7 @@ Rasterizer::putGlyphBitmap(int glyphNo, uint8_t *bmp, uint8_t *endbmp,
 	int xmin = INT_MAX, ymin = xmin;
 	int xmax = INT_MIN, ymax = xmax;
 
-	register Point *pp = p[1];
+	Point *pp = p[1];
 	for (int i = nPoints[1]; --i >= 0; ++pp) {
 		if (MAGNIFY > 1) {
 			pp->xnow *= MAGNIFY;
@@ -418,7 +418,7 @@ void
 Rasterizer::scaleGlyph()
 {
 	// scale outline
-	register Point *pp = p[1];
+	Point *pp = p[1];
 	for (int i = nPoints[1]; --i >= 0; ++pp) {
 		pp->xold = scaleX(pp->xnow, pp->ynow);
 		pp->yold = scaleY(pp->ynow, pp->xnow);
