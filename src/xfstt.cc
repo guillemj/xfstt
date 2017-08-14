@@ -90,8 +90,8 @@ int MAGNIFY = 0;
 static uint16_t maxLastChar = 255;
 
 static bool ttdb_needs_resync;
-static unsigned infoSize, nameSize, aliasSize;
-static char *infoBase, *nameBase, *aliasBase;
+static unsigned infoSize, nameSize;
+static char *infoBase, *nameBase;
 static const char *fontdir = FONTDIR;
 static const char *cachedir = CACHEDIR;
 static const char *pidfilename = PIDFILE;
@@ -440,29 +440,14 @@ static int
 listTTFNFonts(char *pattern, int index, char *buf)
 {
 	static TTFNdata *ttfn = 0;
-	static char *alias = 0;
 
 	if (pattern[0] != '*' || pattern[1] != 0)
 		return -1;
 
 	if (index == 0 || ttfn == 0) {
 		ttfn = (TTFNdata *)(infoBase + sizeof(TTFNheader));
-		alias = aliasBase;
 	} else if ((char *)++ttfn >= infoBase + infoSize)
 		return -1;
-
-#if 0
-		int len = aliasSize - (alias - aliasBase);
-		while (--len > 0 && *(alias++) != '\"');
-		if (len <= 0)
-			return -1;
-		char *name = alias;
-		while (--len > 0 && *(alias++) != '\"');
-		*buf = alias - name - 1;
-		strncpy(buf + 1, name, *(uint8_t *)buf);
-		return *buf + 1;
-	}
-#endif
 
 	char *fontName = nameBase + ttfn->nameOfs;
 
@@ -796,7 +781,7 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 static int
 openTTFdb()
 {
-	infoSize = nameSize = aliasSize = 0;
+	infoSize = nameSize = 0;
 
 	if (chdir(fontdir)) {
 		error(_("directory \"%s\" does not exist!\n"), fontdir);
@@ -870,21 +855,6 @@ openTTFdb()
 		return 0;
 	}
 
-	if (!stat("fonts.alias", &statbuf)) {
-		aliasSize = statbuf.st_size;
-		int fd = open("fonts.alias", O_RDONLY);
-		if (fd < 0)
-			return 0;
-		aliasBase = (char *)mmap(0L, aliasSize, PROT_READ, MAP_SHARED,
-					 fd, 0L);
-		close(fd);
-
-		if (aliasBase == MAP_FAILED) {
-			error(_("cannot mmap alias database!\n"));
-			return 0;
-		}
-	}
-
 	return 1;
 }
 
@@ -895,10 +865,8 @@ closeTTFdb()
 		munmap(infoBase, infoSize);
 	if (nameSize)
 		munmap(nameBase, nameSize);
-	if (aliasSize)
-		munmap(aliasBase, aliasSize);
 
-	infoSize = nameSize = aliasSize = 0;
+	infoSize = nameSize = 0;
 }
 
 static void
