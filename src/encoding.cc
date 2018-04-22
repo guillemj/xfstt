@@ -306,9 +306,9 @@ int
 iso8859_9::map2unicode(int code)
 {
 	if (code <= 0x1f) return boxtable[code]; // for boxdrawings
+	if (code == 0x80) return 0x20AC;	// euro currency symbol
 	if (code < 0xd0 || code >= 255) return code;
 	switch (code) {
-	case 0x80:	return 0x20AC;
 	case 0xd0:	return 0x011e;
 	case 0xdd:	return 0x0130;
 	case 0xde:	return 0x015e;
