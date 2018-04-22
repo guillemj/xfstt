@@ -330,6 +330,7 @@ ttSyncAll(bool gslist = false)
 	TTFNheader info;
 	memcpy(info.magic, "TTFN", 4);
 	info.version = TTFN_VERSION;
+	info.key = 0;	// XXX
 	info.crc = 0;	// XXX
 	memcpy(info.type, "INFO", 4);
 	fwrite((void *)&info, 1, sizeof(info), infoFile);
