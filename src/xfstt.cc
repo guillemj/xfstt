@@ -798,6 +798,7 @@ openTTFdb()
 	struct stat statbuf;
 	if (fstat(fd, &statbuf) < 0) {
 		error(_("cannot stat fond database!\n"));
+		close(fd);
 		return 0;
 	}
 	infoSize = statbuf.st_size;
@@ -832,6 +833,7 @@ openTTFdb()
 
 	if (fstat(fd, &statbuf) < 0) {
 		error(_("cannot stat font database!\n"));
+		close(fd);
 		return 0;
 	}
 	nameSize = statbuf.st_size;
