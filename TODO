@@ -7,7 +7,7 @@ TODO list:
  - error messages using syslog (depends on error()).
  - add memory sharing support (multi-threading?).
  - add anti-aliasing support (using the X render extension).
- - add endianess agnostic support.
+ - add endianness agnostic support.
    - make showttf endian agnostic.
  - add missing encodings.
  - add TTF apple encoding.

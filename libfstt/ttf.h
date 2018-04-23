@@ -94,7 +94,7 @@ public:
 	uint32_t calcChecksum();
 
 	// these inlined functions are generic and should be optimized
-	// for specific processors (alignment, endianess, ...)
+	// for specific processors (alignment, endianness, ...)
 
 	int8_t readSByte() {
 		int8_t i = ptr[0];
@@ -1037,7 +1037,7 @@ enum {
 	S45ROUND	= 0x77,	// super round 45 degrees
 	SLOOP		= 0x17,	// set loop counter
 	SMD		= 0x1A,	// set minimum distance
-	INSTCTRL	= 0x8E,	// intruction execution control
+	INSTCTRL	= 0x8E,	// instruction execution control
 
 	// scan conversion control
 
@@ -1219,7 +1219,7 @@ enum {
 	LOOPCALL	= 0x2A,	// loop and call
 	IDEF		= 0x89,	// instruction definition
 
-	// miscelleneous
+	// miscellaneous
 
 	DBG		= 0x4F,	// debug
 	GETINFO		= 0x88	// get info about glyph and scaler

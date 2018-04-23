@@ -15,7 +15,7 @@
 1.9.2 (2015-08-11)
 
 	Documentation:
-	 · Update Jave AWT font.properties example.
+	 · Update Java AWT font.properties example.
 	 · Switch source browser URL to use cgit.
 	 · Remove obsolete LSM file.
 	Build system:
@@ -140,7 +140,7 @@
 	Changed indentation.
 
 	Fixed slow down with some programs using FS_ListFontsWithXInfo.
-	Fixed childs unlinking unix socket when father uid == childs uid.
+	Fixed children unlinking unix socket when father uid == child's uid.
 	Added an option to specify pidfile location.
 	Added endpwent() to prevent leaking one fd.
 	Changed usage output.
@@ -206,7 +206,7 @@
 	Added fix for memory bug.
 	Added ‘windows-sami2’.
 	Port changed to 7101 to avoid xfs conflict.
-	Should now be FHS complient (font dir now «/usr/share/fonts/truetype»).
+	Should now be FHS compliant (font dir now «/usr/share/fonts/truetype»).
 	Works with read-only /usr (stores databases in «/var»).
 	Added ‘--user’ option for security.
 	Renamed UNICODE-2 now known as ‘iso10646-1’.

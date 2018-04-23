@@ -30,7 +30,7 @@ This FAQ is current as of version 1.9.3 of xfstt.
 2.14 Why are multiple instances of xfstt running?
 2.15 Help! I just upgraded and the new version doesn't work!
 2.16 Xfstt is broken with Linux kernel 2.4.0!
-2.17 Xfstt wont compile on Solaris x86!
+2.17 Xfstt will not compile on Solaris x86!
 
 3.0 How do I put fonts in categories?
 3.1 Use with Java™ 1.1 and up
@@ -321,7 +321,7 @@ This FAQ is current as of version 1.9.3 of xfstt.
 	of xfstt "side by side" with xfs (the original X Font Server).  since
 	it traditionally uses 7100.
 
-	2) xfstt wont run
+	2) xfstt will not run
 
 	This could be either because 7101 is already used (see Solaris above)
 	or because of the other big change, the font locations moved.
@@ -344,9 +344,9 @@ This FAQ is current as of version 1.9.3 of xfstt.
 	(can't imagine why that might be) just switch to inet instead of
 	unix domain sockets.
 
-2.17 Xfstt wont compile on Solaris x86!
+2.17 Xfstt will not compile on Solaris x86!
 
-	Thats right, at least as far as I have heard. All of the Solaris x86
+	That's right, at least as far as I have heard. All of the Solaris x86
 	users that I have talked to have reported cryptic error messages that
 	I wasn't able to help them much with. If anyone gets it working, or
 	has a Solaris x86 system that I can have an account on to try and

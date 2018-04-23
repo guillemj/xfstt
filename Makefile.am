@@ -1,4 +1,4 @@
-## Processs this file with automake to produce Makefile.in
+## Process this file with automake to produce Makefile.in
 #
 # xfstt Makefile
 #
