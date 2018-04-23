@@ -271,26 +271,21 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 	return nfonts;
 }
 
-static char *
-cachefile(const char *leafname)
+static string
+cachefile(string leafname)
 {
 	struct stat statbuf;
 
 	if (stat(cachedir, &statbuf)) {
 		error(_("directory \"%s\" does not exist!\n"), cachedir);
-		return 0;
+		return string();
 	}
 	if (!S_ISDIR(statbuf.st_mode)) {
 		error(_("\"%s\" is not a directory!\n"), cachedir);
-		return 0;
+		return string();
 	}
 
-	long len = strlen(cachedir) + strlen(leafname) + 2;
-
-	char *buf = new char [len];
-	sprintf(buf, "%s/%s", cachedir, leafname);
-
-	return buf;
+	return string(cachedir) + "/" + leafname;
 }
 
 static int
@@ -304,19 +299,16 @@ ttSyncAll(bool gslist = false)
 		return -1;
 	}
 
-	char *ttinfofilename = cachefile(TTINFO_LEAF);
-	if (!ttinfofilename)
+	string ttinfofilename = cachefile(TTINFO_LEAF);
+	if (ttinfofilename.empty())
 		return -1;
-	char *ttnamefilename = cachefile(TTNAME_LEAF);
-	if (!ttnamefilename) {
-		delete [] ttinfofilename;
+	string ttnamefilename = cachefile(TTNAME_LEAF);
+	if (ttnamefilename.empty()) {
 		return -1;
 	}
 
-	FILE *infoFile = fopen(ttinfofilename, "wb");
-	FILE *nameFile = fopen(ttnamefilename, "wb");
-	delete [] ttinfofilename;
-	delete [] ttnamefilename;
+	FILE *infoFile = fopen(ttinfofilename.c_str(), "wb");
+	FILE *nameFile = fopen(ttnamefilename.c_str(), "wb");
 
 	if (infoFile == NULL || nameFile == NULL) {
 		if (infoFile)
@@ -793,14 +785,13 @@ openTTFdb()
 		return 0;
 	}
 
-	char *ttinfofilename = cachefile(TTINFO_LEAF);
-	if (!ttinfofilename)
+	string ttinfofilename = cachefile(TTINFO_LEAF);
+	if (ttinfofilename.empty())
 		return 0;
 
-	int fd = open(ttinfofilename, O_RDONLY);
+	int fd = open(ttinfofilename.c_str(), O_RDONLY);
 	if (fd < 0) {
 		error(_("cannot open font database!\n"));
-		delete [] ttinfofilename;
 		return 0;
 	}
 
@@ -812,7 +803,6 @@ openTTFdb()
 	infoSize = statbuf.st_size;
 	infoBase = (char *)mmap(0L, infoSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
-	delete [] ttinfofilename;
 
 	if (infoBase == MAP_FAILED) {
 		error(_("cannot mmap font database!\n"));
@@ -830,14 +820,13 @@ openTTFdb()
 		return 0;
 	}
 
-	char *ttnamefilename = cachefile(TTNAME_LEAF);
-	if (!ttnamefilename)
+	string ttnamefilename = cachefile(TTNAME_LEAF);
+	if (ttnamefilename.empty())
 		return -1;
 
-	fd = open(ttnamefilename, O_RDONLY);
+	fd = open(ttnamefilename.c_str(), O_RDONLY);
 	if (fd < 0) {
 		error(_("cannot open font database!\n"));
-		delete [] ttnamefilename;
 		return 0;
 	}
 
@@ -848,7 +837,6 @@ openTTFdb()
 	nameSize = statbuf.st_size;
 	nameBase = (char *)mmap(0L, nameSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
-	delete [] ttnamefilename;
 
 	if (nameBase == MAP_FAILED) {
 		error(_("cannot mmap font database!\n"));
