@@ -960,6 +960,7 @@ fs_connection_setup(fs_conn &conn)
 			error(_("could not write to %s/, please check "
 			      "permissions.\n"), sockdir);
 			close(sd);
+			return -1;
 		} else {
 			listen(sd, 1);
 			conn.sd_list[conn.sd_list_used++] = sd;
@@ -1006,6 +1007,7 @@ fs_connection_setup(fs_conn &conn)
 				"try another port; %s!\n"), conn.port,
 				strerror(errno));
 			close(sd);
+			return -1;
 		}
 		listen(sd, 1);
 		conn.sd_list[conn.sd_list_used++] = sd;
