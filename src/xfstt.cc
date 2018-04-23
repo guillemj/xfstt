@@ -951,6 +951,7 @@ fs_connection_setup(fs_conn &conn)
 		old_umask = umask(0);
 		if (mkdir(sockdir, 01777) < 0) {
 			error(_("cannot make socket directory %s!\n"), sockdir);
+			close(sd);
 			return -1;
 		}
 		unlink(s_unix.sun_path);
