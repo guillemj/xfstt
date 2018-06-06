@@ -238,7 +238,7 @@ TTFont::getFontInfo(FontInfo *fi)
 	if (faceName.empty())
 		faceName = "Unknown";
 
-	if (fi->faceLength > sizeof(fi->faceName))
+	if (faceName.size() > sizeof(fi->faceName))
 		fi->faceLength = sizeof(fi->faceName);
 	else
 		fi->faceLength = faceName.size();
