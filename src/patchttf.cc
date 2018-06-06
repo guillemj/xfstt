@@ -85,6 +85,7 @@ patchttf(int argc, char **argv)
 
 	if (fread(buf.data(), 1, flen, fp) != flen) {
 		printf("Cannot read \"%s\"\n", inTTname.c_str());
+		fclose(fp);
 		return -1;
 	}
 	fclose(fp);
@@ -161,6 +162,7 @@ patchttf(int argc, char **argv)
 	}
 	if (fwrite(buf.data(), 1, flen, fp) != flen) {
 		printf("Cannot write \"%s\"\n", outTTname.c_str());
+		fclose(fp);
 		return -1;
 	}
 
