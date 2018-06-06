@@ -15,6 +15,8 @@ TODO list:
  - fix xfstt crashing X Server when used with some fonts.
  - fix X error when X_SetFontPath on fonts with white spaces (unreproducible).
  - fix xfs protocol compliance.
+ - implement missing support, check the code and the spec:
+   <https://developer.apple.com/fonts/TrueType-Reference-Manual/>
 
 Documentation:
  - differences: xfstt vs xtt-fs.
