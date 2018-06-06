@@ -80,8 +80,10 @@ EbdtTable::readBitmap(int format, uint8_t *bitmap,
 				*p = readUByte();
 		}
 		break;
+	case 5:	// metrics in EBLC instead, similar to format 2 and 7
+		// TODO
+		break;
 	case 2:
-	case 5:
 	case 7:	// bit aligned bitmap
 		{
 		for (int rem = 0, h = height; --h >= 0;) {
