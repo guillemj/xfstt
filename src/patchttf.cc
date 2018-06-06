@@ -147,12 +147,15 @@ patchttf(int argc, char **argv)
 		}
 	}
 
-	int check = checksum(buf.data(), flen) - 0xB1B0AFBA;
-	//printf("csAdjust = %08X\n", check);
-	headTable[8] = (uint8_t)(check >> 24);
-	headTable[9] = (uint8_t)(check >> 16);
-	headTable[10] = (uint8_t)(check >> 8);
-	headTable[11] = (uint8_t)check;
+	if (headTable) {
+		int check = checksum(buf.data(), flen) - 0xB1B0AFBA;
+
+		//printf("csAdjust = %08X\n", check);
+		headTable[8] = (uint8_t)(check >> 24);
+		headTable[9] = (uint8_t)(check >> 16);
+		headTable[10] = (uint8_t)(check >> 8);
+		headTable[11] = (uint8_t)check;
+	}
 
 	// write the patched file
 	fp = fopen(outTTname.c_str(), "wb");

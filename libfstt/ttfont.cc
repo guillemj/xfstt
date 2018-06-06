@@ -364,14 +364,16 @@ TTFont::updateChecksums()
 		}
 	}
 
-	int check = checksum(buf, getLength()) - 0xB1B0AFBA;
+	if (headTable) {
+		int check = checksum(buf, getLength()) - 0xB1B0AFBA;
 
-	debug("csAdjust = %08X\n", check);
+		debug("csAdjust = %08X\n", check);
 
-	headTable[8] = (uint8_t)(check >> 24);
-	headTable[9] = (uint8_t)(check >> 16);
-	headTable[10] = (uint8_t)(check >> 8);
-	headTable[11] = (uint8_t)check;
+		headTable[8] = (uint8_t)(check >> 24);
+		headTable[9] = (uint8_t)(check >> 16);
+		headTable[10] = (uint8_t)(check >> 8);
+		headTable[11] = (uint8_t)check;
+	}
 }
 
 int
