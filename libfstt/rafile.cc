@@ -174,6 +174,7 @@ RandomAccessFile::RandomAccessFile(const char *fileName)
 	if (fstat(fd, &st) < 0) {
 		debug("Cannot stat \"%s\"\n", fileName);
 		ptr = absbase = base = 0;
+		close(fd);
 		return;
 	}
 	length = st.st_size;
