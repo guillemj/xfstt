@@ -169,6 +169,7 @@ RandomAccessFile::RandomAccessFile(const char *fileName)
 	if (fd < 0) {
 		debug("Cannot open \"%s\"\n", fileName);
 		ptr = absbase = base = nullptr;
+		length = 0;
 		return;
 	}
 	struct stat st;
@@ -185,6 +186,7 @@ RandomAccessFile::RandomAccessFile(const char *fileName)
 	if (base == MAP_FAILED) {
 		debug("MMap failed '%s'\n", strerror(errno));
 		ptr = absbase = base = nullptr;
+		length = 0;
 		return;
 	}
 	ptr = absbase = base;
