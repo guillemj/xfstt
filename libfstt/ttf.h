@@ -48,9 +48,11 @@ using std::string;
 
 #ifndef DEBUG
 #  define debug(format, ...)	while (0) { }
+#  define DEBUG_ATTR_UNUSED XFSTT_ATTR_UNUSED
 #  define STATIC static
 #else
 #  define debug(format, ...)	fprintf(stderr, format, ##__VA_ARGS__)
+#  define DEBUG_ATTR_UNUSED
 #  define STATIC
 #endif
 
