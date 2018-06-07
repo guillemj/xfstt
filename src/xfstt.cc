@@ -1238,7 +1238,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 	client.event_mask = 0;
 
 	if (defaultres)
-		fp0.resolution[0] = fp.resolution[1] = defaultres;
+		fp0.resolution[0] = fp0.resolution[1] = defaultres;
 
 	for (client.seqno = 1; ; ++client.seqno) {
 		if (ttdb_needs_resync)
