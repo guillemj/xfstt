@@ -1230,10 +1230,657 @@ fs_check_size(fs_client &client, int expected_size)
 }
 
 static int
+fs_client_init(fs_client &client)
+{
+	int i;
+
+	int l = read(client.sd, client.buf, sz_fsReq);
+	if (l < sz_fsReq)
+		return l;
+
+#ifdef DEBUG
+	debug("===STARTREQ=========== %d\n", l);
+	for (i = 0; i < sz_fsReq; ++i)
+		debug("%02X ", client.buf[i]);
+	debug("\n");
+	sync();
+#endif
+
+	int size = client.req.length << 2;
+	if (size > MAXREQSIZE) {
+		debug("too much data: %d bytes (max=%d)\n", size, MAXREQSIZE);
+		fs_client_error(client, FSBadLength);
+		return -1;
+	}
+
+	for (; l < size; l += i) {
+		i = read(client.sd, client.buf + l, size - l);
+		if (i <= 0)
+			return i;
+	}
+
+#ifdef DEBUG
+	for (i = sz_fsReq; i < size; ++i) {
+		debug("%02X ", client.buf[i]);
+		if ((i & 3) == 3)
+			debug(" ");
+		if ((i & 15) == (15 - sz_fsReq))
+			debug("\n");
+	}
+	debug("\n===ENDREQ============= %d\n", size);
+	sync();
+#endif
+
+	return 0;
+}
+
+static void
+fs_list_extensions(fs_client &client)
+{
+	debug("FS_ListExtensions\n");
+
+	fsListExtensionsReply reply = { 0 };
+	reply.type = FS_Reply;
+	reply.nExtensions = 0;
+	reply.sequenceNumber = client.seqno;
+	reply.length = sizeof(reply) >> 2;
+
+	write(client.sd, (void *)&reply, sizeof(reply));
+}
+
+static void
+fs_query_extensions(fs_client &client)
+{
+	debug("FS_QueryExtension\n");
+
+	fsQueryExtensionReply reply = { 0 };
+	reply.type = FS_Reply;
+	reply.present = 0;
+	reply.sequenceNumber = client.seqno;
+	reply.length = sizeof(reply) >> 2;
+	reply.major_version = 0;
+	reply.minor_version = 0;
+	reply.major_opcode = 0;
+	reply.first_event = 0;
+	reply.num_events = 0;
+	reply.first_error = 0;
+	reply.num_errors = 0;
+
+	write(client.sd, (void *)&reply, sizeof(reply));
+}
+
+static void
+fs_list_catalogues(fs_client &client)
+{
+	debug("FS_ListCatalogues\n");
+
+	fsListCataloguesReply reply = { 0 };
+	reply.type = FS_Reply;
+	reply.sequenceNumber = client.seqno;
+	reply.length = sizeof(reply) >> 2;
+	reply.num_replies = 0;
+	reply.num_catalogues = 0;
+
+	write(client.sd, (void *)&reply, sizeof(reply));
+}
+
+static void
+fs_set_catalogues(fs_client &client XFSTT_ATTR_UNUSED)
+{
+	debug("FS_SetCatalogues\n");
+
+	// Resync font database.
+	ttdb_resync();
+}
+
+static void
+fs_get_catalogues(fs_client &client)
+{
+	debug("FS_GetCatalogues\n");
+
+	fsGetCataloguesReply reply = { 0 };
+	reply.type = FS_Reply;
+	reply.num_catalogues = 0;
+	reply.sequenceNumber = client.seqno;
+	reply.length = sizeof(reply) >> 2;
+
+	write(client.sd, (void *)&reply, sizeof(reply));
+}
+
+static void
+fs_set_event_mask(fs_client &client)
+{
+	fsSetEventMaskReq *req = (fsSetEventMaskReq *)client.buf;
+	client.event_mask = req->event_mask;
+	debug("FS_SetEventMask %04X\n", client.event_mask);
+}
+
+static void
+fs_get_event_mask(fs_client &client)
+{
+	debug("FS_GetEventMask = %04X\n", client.event_mask);
+
+	fsGetEventMaskReply reply = { 0 };
+	reply.type = FS_Reply;
+	reply.sequenceNumber = client.seqno;
+	reply.length = sizeof(reply) >> 2;
+	reply.event_mask = client.event_mask;
+
+	write(client.sd, (void *)&reply, sizeof(reply));
+}
+
+static void
+fs_create_ac(fs_client &client)
+{
+	debug("FS_CreateAC\n");
+
+	fsCreateACReply reply = { 0 };
+	reply.type = FS_Reply;
+	reply.auth_index = 0;
+	reply.sequenceNumber = client.seqno;
+	reply.length = sizeof(reply) >> 2;
+	reply.status = AuthSuccess;
+
+	write(client.sd, (void *)&reply, sizeof(reply));
+}
+
+static void
+fs_free_ac(fs_client &client)
+{
+	debug("FS_FreeAC\n");
+
+	fsGenericReply reply = { 0 };
+	reply.type = FS_Reply;
+	reply.sequenceNumber = client.seqno;
+	reply.length = sizeof(reply) >> 2;
+
+	write(client.sd, (void *)&reply, sizeof(reply));
+}
+
+static void
+fs_set_authorization(fs_client &client XFSTT_ATTR_UNUSED)
+{
+	debug("FS_SetAuthorization\n");
+}
+
+static void
+fs_set_resolution(fs_client &client, FontParams &fp0)
+{
+	fsSetResolutionReq *req = (fsSetResolutionReq *)client.buf;
+	int numres = req->num_resolutions;
+	int expected_size = numres * sz_fsResolution + sz_fsSetResolutionReq;
+
+	if (!fs_check_size(client, expected_size))
+		return;
+
+	fsResolution *res = (fsResolution *)(req + 1);
+
+	debug("FS_SetResolution * %d\n", numres);
+	for (; --numres >= 0; ++res) {
+		if (!defaultres) {
+			fp0.resolution[0] = res->x_resolution;
+			fp0.resolution[1] = res->y_resolution;
+		}
+		res->point_size /= 10;
+		fp0.point[0] = fp0.point[1] = res->point_size;
+		fp0.point[2] = fp0.point[3] = 0;
+		debug("xres = %d, yres = %d, size = %d\n",
+		      res->x_resolution, res->y_resolution,
+		      res->point_size / 10);
+	}
+}
+
+static void
+fs_get_resolution(fs_client &client, FontParams &fp0)
+{
+	debug("FS_GetResolution\n");
+
+	struct {
+		fsGetResolutionReply s1;
+		fsResolution s2;
+		char pad[2];
+	} reply = { 0 };
+
+	reply.s1.type = FS_Reply;
+	reply.s1.num_resolutions = 1;
+	reply.s1.sequenceNumber = client.seqno;
+	reply.s1.length = sizeof(reply) >> 2;
+	reply.s2.x_resolution = fp0.resolution[0];
+	reply.s2.y_resolution = fp0.resolution[1];
+	reply.s2.point_size = fp0.point[0] * 10;
+
+	write(client.sd, (void *)&reply, sizeof(reply));
+}
+
+static void
+fs_list_fonts(fs_client &client)
+{
+	fsListFontsReq* req = (fsListFontsReq *)client.buf;
+	char *pattern = (char *)(req + 1);
+	int expected_size = sz_fsListFontsReq + req->nbytes;
+
+	if (!fs_check_size(client, expected_size))
+		return;
+
+	pattern[req->nbytes] = 0;
+	debug("FS_ListFonts \"%s\" * %ld\n", pattern, req->maxNames);
+
+	fsListFontsReply reply = { 0 };
+	reply.type = FS_Reply;
+	reply.sequenceNumber = client.seqno;
+	// XXX: XFree doesn't handle split up replies yet
+	reply.following = 0;
+	reply.nFonts = 0;
+
+	char *buf = client.replybuf;
+	char *endbuf = client.replybuf + MAXREPLYSIZE - 256;
+	for (int i = 0; reply.nFonts < req->maxNames; i = 1) {
+		if (buf >= endbuf)
+			break;
+		int len = listXLFDFonts(pattern, i, buf);
+		if (len == 0)
+			continue;
+		if (len < 0)
+			break;
+		buf += len;
+		++reply.nFonts;
+	}
+	for (int i = 0; reply.nFonts < req->maxNames; i = 1) {
+		if (buf >= endbuf)
+			break;
+		int len = listTTFNFonts(pattern, i, buf);
+		if (len == 0)
+			continue;
+		if (len < 0)
+			break;
+		buf += len;
+		++reply.nFonts;
+	}
+	debug("Found %ld fonts\n", reply.nFonts);
+	reply.length = (sizeof(reply) + (buf - client.replybuf)
+	               + 3) >> 2;
+
+	write(client.sd, (void *)&reply, sizeof(reply));
+	write(client.sd, (void *)client.replybuf,
+	      (reply.length << 2) - sizeof(reply));
+}
+
+static void
+fs_list_fonts_with_x_info(fs_client &client)
+{
+	/* Standard non-scalable X Fonts get XInfo really cheap,
+	 * but it means a LOT of work for scalable hinted fonts.
+	 * The high cost is multiplied by the need to go through
+	 * different sizes and resolutions.
+	 */
+	debug("FS_ListFontsWithXInfo\n");
+
+#if 0 // XFSTT_X_COMPLIANT
+	fsListFontsWithXInfoReply reply = { 0 };
+	reply.type = FS_Reply;
+	reply.nameLength = 0;
+	reply.sequenceNumber = client.seqno;
+	reply.length = sizeof(reply) >> 2;
+	reply.nReplies = 0;
+	// XXX: write(client.sd, (void *)&reply, sizeof(reply));
+	write(client.sd, (void *)&reply, sizeof(fsGenericReply));
+#else
+	fs_client_error(client, FSBadImplementation);
+#endif
+}
+
+static void
+fs_open_bitmap_font(fs_client &client, FontParams &fp0, Rasterizer *raster)
+{
+	fsOpenBitmapFontReq *req = (fsOpenBitmapFontReq *)client.buf;
+	char *fontName = (char *)(req + 1) + 1;
+	fontName[*(uint8_t *)(req + 1)] = 0;
+
+	debug("FS_OpenBitmapFont \"%s\"", fontName);
+
+	raster->format = (req->format_hint >> 8) & 3;
+	if (req->format_hint & 0x0c)
+		raster->format = ~raster->format;
+
+	FontParams fp = fp0;
+	if (openTTFN(raster, fontName, &fp, req->fid) ||
+	    openXLFD(raster, fontName, &fp, req->fid)) {
+		fsOpenBitmapFontReply reply = { 0 };
+		reply.type = FS_Reply;
+		reply.otherid_valid = fsFalse;
+		reply.sequenceNumber = client.seqno;
+		reply.length = sizeof(reply) >> 2;
+		reply.otherid = 0;
+		reply.cachable = fsTrue;
+
+		write(client.sd, (void *)&reply, sizeof(reply));
+		debug(" opened\n");
+	} else {
+		fs_client_error(client, FSBadName);
+		debug(" not found\n");
+	}
+	debug("fhint = %04lX, fmask = %04lX, fid = %ld\n",
+	      req->format_hint, req->format_mask, req->fid);
+}
+
+static void
+fs_query_x_info(fs_client &client)
+{
+	fsQueryXInfoReq *req = (fsQueryXInfoReq *)client.buf;
+
+	debug("FS_QueryXInfo fid = %ld\n", req->id);
+
+	struct {
+		fsQueryXInfoReply s1;
+		fsPropInfo s2;
+		fsPropOffset s3;
+		uint32_t dummyName, dummyValue;
+	} reply = { 0 };
+
+	reply.s1.type = FS_Reply;
+	reply.s1.sequenceNumber = client.seqno;
+	reply.s1.length = sizeof(reply) >> 2;
+	reply.s1.font_header_flags = FontInfoHorizontalOverlap
+				     | FontInfoInkInside;
+
+	XFSFont *xfs = fs_find_font(req->id, client);
+	if (!xfs)
+		return;
+	FontInfo *fi = &xfs->fi;
+	FontExtent *fe = &xfs->fe;
+
+	reply.s1.font_hdr_char_range_min_char_high
+		= reply.s1.font_header_default_char_high
+		= (uint8_t)(fi->firstChar >> 8);
+	reply.s1.font_hdr_char_range_min_char_low
+		= reply.s1.font_header_default_char_low
+		= (uint8_t)fi->firstChar;
+	reply.s1.font_hdr_char_range_max_char_high
+		= (uint8_t)(fi->lastChar >> 8);
+	reply.s1.font_hdr_char_range_max_char_low
+		= (uint8_t)fi->lastChar;
+
+	debug("minchar = 0x%02X%02X, ",
+	      reply.s1.font_hdr_char_range_min_char_high,
+	      reply.s1.font_hdr_char_range_min_char_low);
+	debug("maxchar = 0x%02X%02X\n",
+	      reply.s1.font_hdr_char_range_max_char_high,
+	      reply.s1.font_hdr_char_range_max_char_low);
+
+	reply.s1.font_header_draw_direction = LeftToRightDrawDirection;
+	// XXX: reply.s1.font_header_default_char_high = 0;
+	// XXX: reply.s1.font_header_default_char_low = ' ';
+
+	reply.s1.font_header_min_bounds_left = fe->xLeftMin;
+	reply.s1.font_header_min_bounds_right = fe->xRightMin;
+	reply.s1.font_header_min_bounds_width = fe->xAdvanceMin;
+	reply.s1.font_header_min_bounds_ascent = fe->yAscentMin;
+	reply.s1.font_header_min_bounds_descent = fe->yDescentMin;
+	reply.s1.font_header_min_bounds_attributes = 0;
+	reply.s1.font_header_max_bounds_left = fe->xLeftMax;
+	reply.s1.font_header_max_bounds_right = fe->xRightMax;
+	reply.s1.font_header_max_bounds_width = fe->xAdvanceMax;
+
+	reply.s1.font_header_max_bounds_ascent = fe->yAscentMax;
+	reply.s1.font_header_max_bounds_descent = fe->yDescentMax;
+	reply.s1.font_header_max_bounds_attributes = 0;
+	reply.s1.font_header_font_ascent = fe->yWinAscent;
+	reply.s1.font_header_font_descent = fe->yWinDescent;
+
+	debug("FM= (asc= %d, dsc= %d, ",
+	      fe->yAscentMax, fe->yDescentMax);
+	debug("wasc= %d, wdsc= %d, ",
+	      fe->yWinAscent, fe->yWinDescent);
+	debug("wmin= %d, wmax= %d)\n",
+	      fe->xAdvanceMin, fe->xAdvanceMax);
+
+	// we need to have some property data, otherwise
+	// the X server complains
+	reply.s2.num_offsets = 1;
+	reply.s2.data_len = 8;
+	reply.s3.name.position = 0;
+	reply.s3.name.length = reply.s3.value.position = 4;
+	reply.s3.value.length = 4;
+	reply.s3.type = 0; // XXX: ???
+
+	reply.dummyName = htonl(0x464F4E54);
+	reply.dummyValue = htonl(0x54544678);
+
+	write(client.sd, (void *)&reply, sizeof(reply));
+}
+
+static void
+fs_query_x_extents(fs_client &client)
+{
+	fsQueryXExtents16Req *req = (fsQueryXExtents16Req *)client.buf;
+
+	debug("FS_QueryXExtents%s fid = %ld, ",
+	      (req->reqType == FS_QueryXExtents8 ? "8" : "16"), req->fid);
+	debug("range=%d, nranges=%ld\n", req->range, req->num_ranges);
+
+	int item_size = (req->reqType == FS_QueryXExtents8) ? 1 : 2;
+	int expected_size = sz_fsQueryXExtents8Req
+	                    + req->num_ranges * item_size;
+
+	if (!fs_check_size(client, expected_size))
+		return;
+
+	if (req->reqType == FS_QueryXExtents8) {
+		/* Convert to QueryXExtents16 request. */
+		uint8_t *p8 = (uint8_t *)(req + 1);
+		uint16_t *p16 = (uint16_t *)p8;
+		for (int i = req->num_ranges; --i >= 0;)
+			p16[i] = htons(p8[i]);
+	}
+
+	XFSFont *xfs = fs_find_font(req->fid, client);
+	if (!xfs)
+		return;
+
+	fsXCharInfo *ext0 = (fsXCharInfo *)client.replybuf;
+	fsXCharInfo *ext = ext0;
+	uint16_t *ptr = (uint16_t *)(req + 1);
+	int nranges = req->num_ranges;
+	if (req->range) {
+		ptr[nranges] = htons(xfs->fi.lastChar);
+		if (!nranges) {
+			nranges = 2;
+			ptr[1] = ptr[0];
+			ptr[0] = htons(xfs->fi.firstChar);
+		}
+		for (; nranges > 0; nranges -= 2, ptr += 2) {
+			ptr[0] = ntohs(ptr[0]);
+			ptr[1] = ntohs(ptr[1]);
+			debug("rg %d..%d\n",ptr[0],ptr[1]);
+			for (uint16_t j = ptr[0]; j <= ptr[1]; ++j)
+				(ext++)->left = j;
+		}
+	} else
+		while (--nranges >= 0)
+			(ext++)->left = ntohs(*(ptr++));
+
+	fsQueryXExtents16Reply reply = { 0 };
+	reply.type = FS_Reply;
+	reply.sequenceNumber = client.seqno;
+	reply.num_extents = ext - ext0;
+	reply.length = (sizeof(reply) + 3 +
+	                ((uint8_t *)ext - (uint8_t *)ext0))
+	               >> 2;
+
+	CharInfo *ci = (CharInfo *)xfs->fe.buffer;
+
+	ext = ext0;
+	for (int i = reply.num_extents; --i >= 0; ++ext) {
+		int ch = ext->left;
+		ch = xfs->encoding->map2unicode(ch);
+		int glyphNo = xfs->ttFont->getGlyphNo16(ch);
+		GlyphMetrics *gm = &ci[glyphNo].gm;
+
+		ext->left = -gm->xOrigin;
+		ext->right = gm->xBlackbox - gm->xOrigin;
+		ext->width = gm->xAdvance;
+		ext->ascent = gm->yBlackbox - gm->yOrigin;
+		ext->descent = gm->yOrigin;
+		ext->attributes = gm->yAdvance;
+
+		// Thanks GB
+		if (!glyphNo && ch != xfs->fi.firstChar) {
+			ext->left = ext->right = 0;
+			ext->ascent = ext->descent = 0;
+			ext->width = ext->attributes = 0;
+		}
+
+#if DEBUG & 2
+		debug("GM[%3d = %3d] = ", ch, glyphNo);
+		debug("(l= %d, r= %d, ",
+		      ext->left, ext->right);
+		debug("w= %d, a= %d, d= %d);\n",
+		      ext->width, ext->ascent, ext->descent);
+#endif
+	}
+	write(client.sd, (void *)&reply, sizeof(reply));
+	write(client.sd, (void *)ext0, (uint8_t *)ext - (uint8_t *)ext0);
+}
+
+static void
+fs_query_x_bitmaps(fs_client &client)
+{
+	fsQueryXBitmaps16Req *req = (fsQueryXBitmaps16Req *)client.buf;
+
+	debug("FS_QueryXBitmaps16 fid = %ld, fmt = %04lX\n",
+	      req->fid, req->format);
+	debug("range=%d, nranges=%ld\n", req->range, req->num_ranges);
+
+	int item_size = (req->reqType == FS_QueryXExtents8) ? 1: 2;
+	int expected_size = sz_fsQueryXBitmaps8Req
+	                    + req->num_ranges * item_size;
+
+	if (!fs_check_size(client, expected_size))
+		return;
+
+	if (req->reqType == FS_QueryXBitmaps8) {
+		/* Convert to QueryXBitmaps16 request. */
+		uint8_t *p8 = (uint8_t *)(req + 1);
+		uint16_t *p16 = (uint16_t *)p8;
+		for (int i = req->num_ranges; --i >= 0;)
+			p16[i] = ntohs(p8[i]);
+	}
+
+	XFSFont *xfs = fs_find_font(req->fid, client);
+	if (!xfs)
+		return;
+
+	fixup_bitmap(&xfs->fe, req->format);
+
+	fsOffset32 *ofs0 = (fsOffset32 *)client.replybuf;
+	fsOffset32 *ofs = ofs0;
+	uint16_t *ptr = (uint16_t *)(req + 1);
+	int nranges = req->num_ranges;
+	if (req->range) {
+		ptr[nranges] = htons(xfs->fi.lastChar);
+		if (!nranges) {
+			nranges = 2;
+			ptr[1] = ptr[0];
+			ptr[0] = htons(xfs->fi.firstChar);
+		}
+		for (; nranges > 0; nranges -= 2, ptr += 2) {
+			ptr[0] = ntohs(ptr[0]);
+			ptr[1] = ntohs(ptr[1]);
+			debug("rg %d..%d\n",ptr[0],ptr[1]);
+			for (uint16_t j = ptr[0]; j <= ptr[1]; ++j)
+				(ofs++)->position = j;
+		}
+	} else
+		while (--nranges >= 0)
+			(ofs++)->position = ntohs(*(ptr++));
+
+	fsQueryXBitmaps16Reply reply = { 0 };
+	reply.type = FS_Reply;
+	reply.sequenceNumber = client.seqno;
+	reply.num_chars = ofs - ofs0;
+	reply.nbytes = xfs->fe.bmplen;
+	reply.replies_hint = 0;
+
+	CharInfo *cia = (CharInfo *)xfs->fe.buffer;
+	for (int i = xfs->fe.numGlyphs; --i >= 0; ++cia)
+		cia->tmpofs = -1;
+	cia = (CharInfo *)xfs->fe.buffer;
+
+	char *bmp0 = (char *)ofs, *bmp = bmp0;
+	ofs = ofs0;
+	char *replylimit = client.replybuf + MAXREPLYSIZE;
+	for (int i = reply.num_chars; --i >= 0; ++ofs) {
+		int ch = ofs->position;
+		ch = xfs->encoding->map2unicode(ch);
+		int glyphNo = xfs->ttFont->getGlyphNo16(ch);
+		CharInfo *ci = &cia[glyphNo];
+
+		ofs->length = ci->length;
+		if (ci->tmpofs < 0) {
+			if (bmp + ci->length < replylimit) {
+				uint8_t *src = xfs->fe.bitmaps;
+				src += ci->offset;
+				memcpy(bmp, src, ci->length);
+				ci->tmpofs = bmp - bmp0;
+				bmp += ci->length;
+			} else {
+				ci->tmpofs = 0;
+				ofs->length = 0;
+			}
+		}
+		ofs->position = ci->tmpofs;
+
+#if DEBUG & 2
+		debug("OFS[%3d = %3d] = %ld\n",
+		      ch, glyphNo, ofs->position);
+#endif
+	}
+	reply.nbytes = bmp - bmp0;
+#if 1
+	reply.length = (sizeof(reply) + reply.nbytes + 3 +
+	                ((uint8_t *)ofs - (uint8_t *)ofs0))
+	               >> 2;
+	write(client.sd, (void *)&reply, sizeof(reply));
+	write(client.sd, (void *)ofs0, (uint8_t *)ofs - (uint8_t *)ofs0);
+	write(client.sd, (void *)bmp0, (reply.nbytes + 3) & ~3);
+#else
+	int nbytes = reply.nbytes;
+	reply.nbytes = 0;
+	reply.replies_hint = 1;
+	reply.length = (sizeof(reply) +
+	                ((uint8_t *)ofs - (uint8_t *)ofs0))
+	               >> 2;
+	write(client.sd, (void *)&reply, sizeof(reply));
+	write(client.sd, (void *)ofs0, (uint8_t *)ofs - (uint8_t *)ofs0);
+
+	reply.nbytes = nbytes;
+	reply.replies_hint = 0;
+	reply.sequenceNumber = ++client.seqno;
+	reply.length = (sizeof(reply) + (bmp - bmp0)) >> 2;
+	write(client.sd, (void *)&reply, sizeof(reply));
+	write(client.sd, (void *)bmp0, (reply.nbytes + 3) & ~3);
+#endif
+}
+
+static void
+fs_close_font(fs_client &client)
+{
+	fsCloseReq *req = (fsCloseReq *)client.buf;
+
+	debug("FS_CloseFont fid = %ld\n", req->id);
+
+	XFSFont *xfs = fs_find_font(req->id, client);
+	if (xfs) {
+		deallocMem(xfs->fe.buffer, xfs->fe.buflen);
+		delete xfs->ttFont;
+		xfs->fid = 0;
+	}
+}
+
+static int
 fs_working(fs_client &client, Rasterizer *raster)
 {
-	FontParams fp0 = {{0, 0, 0, 0}, {0, 0, 0, 0}, {VGARES, VGARES}, 0}, fp;
-	int i;
+	FontParams fp0 = {{0, 0, 0, 0}, {0, 0, 0, 0}, {VGARES, VGARES}, 0};
 
 	client.event_mask = 0;
 
@@ -1244,652 +1891,72 @@ fs_working(fs_client &client, Rasterizer *raster)
 		if (ttdb_needs_resync)
 			ttdb_resync();
 
-		int l = read(client.sd, client.buf, sz_fsReq);
-		if (l < sz_fsReq)
-			return l;
-
-#ifdef DEBUG
-		debug("===STARTREQ=========== %d\n", l);
-		for (i = 0; i < sz_fsReq; ++i)
-			debug("%02X ", client.buf[i]);
-		debug("\n");
-		sync();
-#endif
-
-		int size = client.req.length << 2;
-		if (size > MAXREQSIZE) {
-			debug("too much data: %d bytes (max=%d)\n",
-			      size, MAXREQSIZE);
-			fs_client_error(client, FSBadLength);
+		if (fs_client_init(client) < 0)
 			break;
-		}
-
-		for (; l < size; l += i) {
-			i = read(client.sd, client.buf + l, size - l);
-			if (i <= 0)
-				return i;
-		}
-
-#ifdef DEBUG
-		for (i = sz_fsReq; i < size; ++i) {
-			debug("%02X ", client.buf[i]);
-			if ((i & 3) == 3)
-				debug(" ");
-			if ((i & 15) == (15 - sz_fsReq))
-				debug("\n");
-		}
-		debug("\n===ENDREQ============= %d\n", size);
-		sync();
-#endif
 
 		switch (client.req.reqType) {
 		case FS_Noop:
 			debug("FS_Noop\n");
 			break;
-
 		case FS_ListExtensions:
-			debug("FS_ListExtensions\n");
-			{
-			fsListExtensionsReply reply = { 0 };
-			reply.type = FS_Reply;
-			reply.nExtensions = 0;
-			reply.sequenceNumber = client.seqno;
-			reply.length = sizeof(reply) >> 2;
-
-			write(client.sd, (void *)&reply, sizeof(reply));
-			}
+			fs_list_extensions(client);
 			break;
-
 		case FS_QueryExtension:
-			debug("FS_QueryExtension\n");
-			{
-			fsQueryExtensionReply reply = { 0 };
-			reply.type = FS_Reply;
-			reply.present = 0;
-			reply.sequenceNumber = client.seqno;
-			reply.length = sizeof(reply) >> 2;
-			reply.major_version = 0;
-			reply.minor_version = 0;
-			reply.major_opcode = 0;
-			reply.first_event = 0;
-			reply.num_events = 0;
-			reply.first_error = 0;
-			reply.num_errors = 0;
-
-			write(client.sd, (void *)&reply, sizeof(reply));
-			}
+			fs_query_extensions(client);
 			break;
-
 		case FS_ListCatalogues:
-			debug("FS_ListCatalogues\n");
-			{
-			fsListCataloguesReply reply = { 0 };
-			reply.type = FS_Reply;
-			reply.sequenceNumber = client.seqno;
-			reply.length = sizeof(reply) >> 2;
-			reply.num_replies = 0;
-			reply.num_catalogues = 0;
-
-			write(client.sd, (void *)&reply, sizeof(reply));
-			}
+			fs_list_catalogues(client);
 			break;
-
-		case FS_SetCatalogues:	// resync font database
-			debug("FS_SetCatalogues\n");
-			ttdb_resync();
+		case FS_SetCatalogues:
+			fs_set_catalogues(client);
 			break;
-
 		case FS_GetCatalogues:
-			debug("FS_GetCatalogues\n");
-			{
-			fsGetCataloguesReply reply = { 0 };
-			reply.type = FS_Reply;
-			reply.num_catalogues = 0;
-			reply.sequenceNumber = client.seqno;
-			reply.length = sizeof(reply) >> 2;
-
-			write(client.sd, (void *)&reply, sizeof(reply));
-			}
+			fs_get_catalogues(client);
 			break;
-
 		case FS_SetEventMask:
-			{
-			fsSetEventMaskReq *req = (fsSetEventMaskReq *)client.buf;
-			client.event_mask = req->event_mask;
-			debug("FS_SetEventMask %04X\n", client.event_mask);
-			}
+			fs_set_event_mask(client);
 			break;
-
 		case FS_GetEventMask:
-			debug("FS_GetEventMask = %04X\n", client.event_mask);
-			{
-			fsGetEventMaskReply reply = { 0 };
-			reply.type = FS_Reply;
-			reply.sequenceNumber = client.seqno;
-			reply.length = sizeof(reply) >> 2;
-			reply.event_mask = client.event_mask;
-
-			write(client.sd, (void *)&reply, sizeof(reply));
-			}
+			fs_get_event_mask(client);
 			break;
-
 		case FS_CreateAC:		// don't care
-			debug("FS_CreateAC\n");
-			{
-			fsCreateACReply reply = { 0 };
-			reply.type = FS_Reply;
-			reply.auth_index = 0;
-			reply.sequenceNumber = client.seqno;
-			reply.length = sizeof(reply) >> 2;
-			reply.status = AuthSuccess;
-
-			write(client.sd, (void *)&reply, sizeof(reply));
-			}
+			fs_create_ac(client);
 			break;
-
 		case FS_FreeAC:			// don't care
-			debug("FS_FreeAC\n");
-			{
-			fsGenericReply reply = { 0 };
-			reply.type = FS_Reply;
-			reply.sequenceNumber = client.seqno;
-			reply.length = sizeof(reply) >> 2;
-
-			write(client.sd, (void *)&reply, sizeof(reply));
-			}
+			fs_free_ac(client);
 			break;
-
 		case FS_SetAuthorization:	// don't care
-			debug("FS_SetAuthorization\n");
+			fs_set_authorization(client);
 			break;
-
 		case FS_SetResolution:
-			{
-			fsSetResolutionReq *req = (fsSetResolutionReq *)client.buf;
-			int numres = req->num_resolutions;
-			int expected_size = numres * sz_fsResolution
-					    + sz_fsSetResolutionReq;
-
-			if (!fs_check_size(client, expected_size))
-				break;
-
-			fsResolution *res = (fsResolution *)(req + 1);
-
-			debug("FS_SetResolution * %d\n", numres);
-			for (; --numres >= 0; ++res) {
-				if (!defaultres) {
-					fp0.resolution[0] = res->x_resolution;
-					fp0.resolution[1] = res->y_resolution;
-				}
-				res->point_size /= 10;
-				fp0.point[0] = fp0.point[1] = res->point_size;
-				fp0.point[2] = fp0.point[3] = 0;
-				debug("xres = %d, yres = %d, size = %d\n",
-				      res->x_resolution, res->y_resolution,
-				      res->point_size / 10);
-			}
-			}
+			fs_set_resolution(client, fp0);
 			break;
-
 		case FS_GetResolution:
-			debug("FS_GetResolution\n");
-			{
-			struct {
-				fsGetResolutionReply s1;
-				fsResolution s2;
-				char pad[2];
-			} reply = { 0 };
-
-			reply.s1.type = FS_Reply;
-			reply.s1.num_resolutions = 1;
-			reply.s1.sequenceNumber = client.seqno;
-			reply.s1.length = sizeof(reply) >> 2;
-			reply.s2.x_resolution = fp0.resolution[0];
-			reply.s2.y_resolution = fp0.resolution[1];
-			reply.s2.point_size = fp0.point[0] * 10;
-
-			write(client.sd, (void *)&reply, sizeof(reply));
-			}
-
+			fs_get_resolution(client, fp0);
 			break;
-
 		case FS_ListFonts:
-			{
-			fsListFontsReq* req = (fsListFontsReq *)client.buf;
-			char *pattern = (char *)(req + 1);
-			int expected_size = sz_fsListFontsReq + req->nbytes;
-
-			if (!fs_check_size(client, expected_size))
-				break;
-
-			pattern[req->nbytes] = 0;
-			debug("FS_ListFonts \"%s\" * %ld\n",
-			      pattern, req->maxNames);
-
-			fsListFontsReply reply = { 0 };
-			reply.type = FS_Reply;
-			reply.sequenceNumber = client.seqno;
-			// XXX: XFree doesn't handle split up replies yet
-			reply.following = 0;
-			reply.nFonts = 0;
-
-			char *buf = client.replybuf;
-			char *endbuf = client.replybuf + MAXREPLYSIZE - 256;
-			for (i = 0; reply.nFonts < req->maxNames; i = 1) {
-				if (buf >= endbuf)
-					break;
-				int len = listXLFDFonts(pattern, i, buf);
-				if (len == 0)
-					continue;
-				if (len < 0)
-					break;
-				buf += len;
-				++reply.nFonts;
-			}
-			for (i = 0; reply.nFonts < req->maxNames; i = 1) {
-				if (buf >= endbuf)
-					break;
-				int len = listTTFNFonts(pattern, i, buf);
-				if (len == 0)
-					continue;
-				if (len < 0)
-					break;
-				buf += len;
-				++reply.nFonts;
-			}
-			debug("Found %ld fonts\n", reply.nFonts);
-			reply.length = (sizeof(reply) + (buf - client.replybuf)
-				       + 3) >> 2;
-
-			write(client.sd, (void *)&reply, sizeof(reply));
-			write(client.sd, (void *)client.replybuf,
-			      (reply.length << 2) - sizeof(reply));
-			}
+			fs_list_fonts(client);
 			break;
-
 		case FS_ListFontsWithXInfo:
-			/* standard non-scalable X Fonts get XInfo really cheap,
-			 * but it means a LOT of work for scalable hinted fonts.
-			 * The high cost is multiplied by the need to go through
-			 * different sizes and resolutions.
-			 */
-			debug("FS_ListFontsWithXInfo\n");
-			{
-// XFSTT_X_COMPLIANT
-#if 0
-			fsListFontsWithXInfoReply reply = { 0 };
-			reply.type = FS_Reply;
-			reply.nameLength = 0;
-			reply.sequenceNumber = client.seqno;
-			reply.length = sizeof(reply) >> 2;
-			reply.nReplies = 0;
-			// XXX: write(client.sd, (void *)&reply, sizeof(reply));
-			write(client.sd, (void *)&reply, sizeof(fsGenericReply));
-#else
-			fs_client_error(client, FSBadImplementation);
-#endif
-			}
+			fs_list_fonts_with_x_info(client);
 			break;
-
 		case FS_OpenBitmapFont:
-			{
-			fsOpenBitmapFontReq *req = (fsOpenBitmapFontReq *)client.buf;
-			char *fontName = (char *)(req + 1) + 1;
-			fontName[*(uint8_t *)(req + 1)] = 0;
-			debug("FS_OpenBitmapFont \"%s\"", fontName);
-
-			raster->format = (req->format_hint >> 8) & 3;
-			if (req->format_hint & 0x0c)
-				raster->format = ~raster->format;
-
-			fp = fp0;
-			if (openTTFN(raster, fontName, &fp, req->fid)
-			    || openXLFD(raster, fontName, &fp, req->fid)) {
-				fsOpenBitmapFontReply reply = { 0 };
-				reply.type = FS_Reply;
-				reply.otherid_valid = fsFalse;
-				reply.sequenceNumber = client.seqno;
-				reply.length = sizeof(reply) >> 2;
-				reply.otherid = 0;
-				reply.cachable = fsTrue;
-
-				write(client.sd, (void *)&reply, sizeof(reply));
-				debug(" opened\n");
-			} else {
-				fs_client_error(client, FSBadName);
-				debug(" not found\n");
-			}
-			debug("fhint = %04lX, fmask = %04lX, fid = %ld\n",
-			      req->format_hint, req->format_mask, req->fid);
-			}
+			fs_open_bitmap_font(client, fp0, raster);
 			break;
-
 		case FS_QueryXInfo:
-			{
-			fsQueryXInfoReq *req = (fsQueryXInfoReq *)client.buf;
-			debug("FS_QueryXInfo fid = %ld\n", req->id);
-
-			struct {
-				fsQueryXInfoReply s1;
-				fsPropInfo s2;
-				fsPropOffset s3;
-				uint32_t dummyName, dummyValue;
-			} reply = { 0 };
-
-			reply.s1.type = FS_Reply;
-			reply.s1.sequenceNumber = client.seqno;
-			reply.s1.length = sizeof(reply) >> 2;
-			reply.s1.font_header_flags = FontInfoHorizontalOverlap
-						     | FontInfoInkInside;
-
-			XFSFont *xfs = fs_find_font(req->id, client);
-			if (!xfs)
-				break;
-			FontInfo *fi = &xfs->fi;
-			FontExtent *fe = &xfs->fe;
-
-			reply.s1.font_hdr_char_range_min_char_high
-				= reply.s1.font_header_default_char_high
-				= (uint8_t)(fi->firstChar >> 8);
-			reply.s1.font_hdr_char_range_min_char_low
-				= reply.s1.font_header_default_char_low
-				= (uint8_t)fi->firstChar;
-			reply.s1.font_hdr_char_range_max_char_high
-				= (uint8_t)(fi->lastChar >> 8);
-			reply.s1.font_hdr_char_range_max_char_low
-				= (uint8_t)fi->lastChar;
-
-			debug("minchar = 0x%02X%02X, ",
-			      reply.s1.font_hdr_char_range_min_char_high,
-			      reply.s1.font_hdr_char_range_min_char_low);
-			debug("maxchar = 0x%02X%02X\n",
-			      reply.s1.font_hdr_char_range_max_char_high,
-			      reply.s1.font_hdr_char_range_max_char_low);
-
-			reply.s1.font_header_draw_direction = LeftToRightDrawDirection;
-			// XXX: reply.s1.font_header_default_char_high = 0;
-			// XXX: reply.s1.font_header_default_char_low = ' ';
-
-			reply.s1.font_header_min_bounds_left = fe->xLeftMin;
-			reply.s1.font_header_min_bounds_right = fe->xRightMin;
-			reply.s1.font_header_min_bounds_width = fe->xAdvanceMin;
-			reply.s1.font_header_min_bounds_ascent = fe->yAscentMin;
-			reply.s1.font_header_min_bounds_descent = fe->yDescentMin;
-			reply.s1.font_header_min_bounds_attributes = 0;
-			reply.s1.font_header_max_bounds_left = fe->xLeftMax;
-			reply.s1.font_header_max_bounds_right = fe->xRightMax;
-			reply.s1.font_header_max_bounds_width = fe->xAdvanceMax;
-
-			reply.s1.font_header_max_bounds_ascent = fe->yAscentMax;
-			reply.s1.font_header_max_bounds_descent = fe->yDescentMax;
-			reply.s1.font_header_max_bounds_attributes = 0;
-			reply.s1.font_header_font_ascent = fe->yWinAscent;
-			reply.s1.font_header_font_descent = fe->yWinDescent;
-
-			debug("FM= (asc= %d, dsc= %d, ",
-			      fe->yAscentMax, fe->yDescentMax);
-			debug("wasc= %d, wdsc= %d, ",
-			      fe->yWinAscent, fe->yWinDescent);
-			debug("wmin= %d, wmax= %d)\n",
-			      fe->xAdvanceMin, fe->xAdvanceMax);
-
-			// we need to have some property data, otherwise
-			// the X server complains
-			reply.s2.num_offsets = 1;
-			reply.s2.data_len = 8;
-			reply.s3.name.position = 0;
-			reply.s3.name.length = reply.s3.value.position = 4;
-			reply.s3.value.length = 4;
-			reply.s3.type = 0; // XXX: ???
-
-			reply.dummyName = htonl(0x464F4E54);
-			reply.dummyValue = htonl(0x54544678);
-
-			write(client.sd, (void *)&reply, sizeof(reply));
-			}
+			fs_query_x_info(client);
 			break;
-
 		case FS_QueryXExtents8:
 		case FS_QueryXExtents16:
-			{
-			fsQueryXExtents16Req *req = (fsQueryXExtents16Req *)client.buf;
-
-			debug("FS_QueryXExtents%s fid = %ld, ",
-			      (req->reqType == FS_QueryXExtents8 ? "8" : "16"),
-			      req->fid);
-			debug("range=%d, nranges=%ld\n",
-			      req->range, req->num_ranges);
-
-			int item_size = (req->reqType == FS_QueryXExtents8)
-				        ? 1 : 2;
-			int expected_size = sz_fsQueryXExtents8Req
-				            + req->num_ranges * item_size;
-
-			if (!fs_check_size(client, expected_size))
-				break;
-
-			if (req->reqType == FS_QueryXExtents8) {
-				/*
-				 * Convert to QueryXExtents16 request
-				 */
-				uint8_t *p8 = (uint8_t *)(req + 1);
-				uint16_t *p16 = (uint16_t *)p8;
-				for (i = req->num_ranges; --i >= 0;)
-					p16[i] = htons(p8[i]);
-			}
-
-			XFSFont *xfs = fs_find_font(req->fid, client);
-			if (!xfs)
-				break;
-
-			fsXCharInfo *ext0 = (fsXCharInfo *)client.replybuf;
-			fsXCharInfo *ext = ext0;
-			uint16_t *ptr = (uint16_t *)(req + 1);
-			int nranges = req->num_ranges;
-			if (req->range) {
-				ptr[nranges] = htons(xfs->fi.lastChar);
-				if (!nranges) {
-					nranges = 2;
-					ptr[1] = ptr[0];
-					ptr[0] = htons(xfs->fi.firstChar);
-				}
-				for (; nranges > 0; nranges -= 2, ptr += 2) {
-					ptr[0] = ntohs(ptr[0]);
-					ptr[1] = ntohs(ptr[1]);
-					debug("rg %d..%d\n",ptr[0],ptr[1]);
-					for (uint16_t j = ptr[0]; j <= ptr[1]; ++j)
-						(ext++)->left = j;
-				}
-			} else
-				while (--nranges >= 0)
-					(ext++)->left = ntohs(*(ptr++));
-
-			fsQueryXExtents16Reply reply = { 0 };
-			reply.type = FS_Reply;
-			reply.sequenceNumber = client.seqno;
-			reply.num_extents = ext - ext0;
-			reply.length = (sizeof(reply) + 3 +
-			                ((uint8_t *)ext - (uint8_t *)ext0))
-			               >> 2;
-
-			CharInfo *ci = (CharInfo *)xfs->fe.buffer;
-
-			ext = ext0;
-			for (i = reply.num_extents; --i >= 0; ++ext) {
-				int ch = ext->left;
-				ch = xfs->encoding->map2unicode(ch);
-				int glyphNo = xfs->ttFont->getGlyphNo16(ch);
-				GlyphMetrics *gm = &ci[glyphNo].gm;
-				
-				ext->left = -gm->xOrigin;
-				ext->right = gm->xBlackbox - gm->xOrigin;
-				ext->width = gm->xAdvance;
-				ext->ascent = gm->yBlackbox - gm->yOrigin;
-				ext->descent = gm->yOrigin;
-				ext->attributes = gm->yAdvance;
-
-				// Thanks GB
-				if (!glyphNo && ch != xfs->fi.firstChar) {
-					ext->left = ext->right = 0;
-					ext->ascent = ext->descent = 0;
-					ext->width = ext->attributes = 0;
-				}
-
-#if DEBUG & 2
-				debug("GM[%3d = %3d] = ", ch, glyphNo);
-				debug("(l= %d, r= %d, ",
-				      ext->left, ext->right);
-				debug("w= %d, a= %d, d= %d);\n",
-				      ext->width, ext->ascent, ext->descent);
-#endif
-			}
-			write(client.sd, (void *)&reply, sizeof(reply));
-			write(client.sd, (void *)ext0, (uint8_t *)ext - (uint8_t *)ext0);
-
-			}
+			fs_query_x_extents(client);
 			break;
-
 		case FS_QueryXBitmaps8:
 		case FS_QueryXBitmaps16:
-			{
-			fsQueryXBitmaps16Req *req = (fsQueryXBitmaps16Req *)client.buf;
-
-			debug("FS_QueryXBitmaps16 fid = %ld, fmt = %04lX\n",
-			      req->fid, req->format);
-			debug("range=%d, nranges=%ld\n",
-			      req->range, req->num_ranges);
-
-			int item_size = (req->reqType == FS_QueryXExtents8)
-				        ? 1: 2;
-			int expected_size = sz_fsQueryXBitmaps8Req
-					    + req->num_ranges * item_size;
-
-			if (!fs_check_size(client, expected_size))
-				break;
-
-			if (req->reqType == FS_QueryXBitmaps8) {
-				/*
-				 * Convert to QueryXBitmaps16 request
-				 */
-				uint8_t *p8 = (uint8_t *)(req + 1);
-				uint16_t *p16 = (uint16_t *)p8;
-				for (i = req->num_ranges; --i >= 0;)
-					p16[i] = ntohs(p8[i]);
-			}
-
-			XFSFont *xfs = fs_find_font(req->fid, client);
-			if (!xfs)
-				break;
-
-			fixup_bitmap(&xfs->fe, req->format);
-
-			fsOffset32 *ofs0 = (fsOffset32 *)client.replybuf;
-			fsOffset32 *ofs = ofs0;
-			uint16_t *ptr = (uint16_t *)(req + 1);
-			int nranges = req->num_ranges;
-			if (req->range) {
-				ptr[nranges] = htons(xfs->fi.lastChar);
-				if (!nranges) {
-					nranges = 2;
-					ptr[1] = ptr[0];
-					ptr[0] = htons(xfs->fi.firstChar);
-				}
-				for (; nranges > 0; nranges -= 2, ptr += 2) {
-					ptr[0] = ntohs(ptr[0]);
-					ptr[1] = ntohs(ptr[1]);
-					debug("rg %d..%d\n",ptr[0],ptr[1]);
-					for (uint16_t j = ptr[0]; j <= ptr[1]; ++j)
-						(ofs++)->position = j;
-				}
-			} else
-				while (--nranges >= 0)
-					(ofs++)->position = ntohs(*(ptr++));
-
-			fsQueryXBitmaps16Reply reply = { 0 };
-			reply.type = FS_Reply;
-			reply.sequenceNumber = client.seqno;
-			reply.num_chars = ofs - ofs0;
-			reply.nbytes = xfs->fe.bmplen;
-			reply.replies_hint = 0;
-
-			CharInfo *cia = (CharInfo *)xfs->fe.buffer;
-			for (i = xfs->fe.numGlyphs; --i >= 0; ++cia)
-				cia->tmpofs = -1;
-			cia = (CharInfo *)xfs->fe.buffer;
-
-			char *bmp0 = (char *)ofs, *bmp = bmp0;
-			ofs = ofs0;
-			char *replylimit = client.replybuf + MAXREPLYSIZE;
-			for (i = reply.num_chars; --i >= 0; ++ofs) {
-				int ch = ofs->position;
-				ch = xfs->encoding->map2unicode(ch);
-				int glyphNo = xfs->ttFont->getGlyphNo16(ch);
-				CharInfo *ci = &cia[glyphNo];
-
-				ofs->length = ci->length;
-				if (ci->tmpofs < 0) {
-					if (bmp + ci->length < replylimit) {
-						uint8_t *src = xfs->fe.bitmaps;
-						src += ci->offset;
-						memcpy(bmp, src, ci->length);
-						ci->tmpofs = bmp - bmp0;
-						bmp += ci->length;
-					} else {
-						ci->tmpofs = 0;
-						ofs->length = 0;
-					}
-				}
-				ofs->position = ci->tmpofs;
-
-#if DEBUG & 2
-				debug("OFS[%3d = %3d] = %ld\n",
-				      ch, glyphNo, ofs->position);
-#endif
-			}
-			reply.nbytes = bmp - bmp0;
-#if 1
-			reply.length = (sizeof(reply) + reply.nbytes + 3 +
-			                ((uint8_t *)ofs - (uint8_t *)ofs0))
-			               >> 2;
-			write(client.sd, (void *)&reply, sizeof(reply));
-			write(client.sd, (void *)ofs0, (uint8_t *)ofs - (uint8_t *)ofs0);
-			write(client.sd, (void *)bmp0, (reply.nbytes + 3) & ~3);
-#else
-{
-			int nbytes = reply.nbytes;
-			reply.nbytes = 0;
-			reply.replies_hint = 1;
-			reply.length = (sizeof(reply) +
-			                ((uint8_t *)ofs - (uint8_t *)ofs0))
-			               >> 2;
-			write(client.sd, (void *)&reply, sizeof(reply));
-			write(client.sd, (void *)ofs0, (uint8_t *)ofs - (uint8_t *)ofs0);
-
-			reply.nbytes = nbytes;
-			reply.replies_hint = 0;
-			reply.sequenceNumber = ++client.seqno;
-			reply.length = (sizeof(reply) + (bmp - bmp0)) >> 2;
-			write(client.sd, (void *)&reply, sizeof(reply));
-			write(client.sd, (void *)bmp0, (reply.nbytes + 3) & ~3);
-}
-#endif
-			}
+			fs_query_x_bitmaps(client);
 			break;
-
 		case FS_CloseFont:
-			{
-			fsCloseReq *req = (fsCloseReq *)client.buf;
-			debug("FS_CloseFont fid = %ld\n", req->id);
-
-			XFSFont *xfs = fs_find_font(req->id, client);
-			if (xfs) {
-				deallocMem(xfs->fe.buffer, xfs->fe.buflen);
-				delete xfs->ttFont;
-				xfs->fid = 0;
-			}
-			}
+			fs_close_font(client);
 			break;
-
 		default:
 			debug("Unknown FS request 0x%02X !\n", client.req.reqType);
 			fs_client_error(client, FSBadRequest);
