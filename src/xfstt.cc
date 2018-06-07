@@ -468,7 +468,7 @@ listTTFNFonts(char *pattern, int index, char *buf)
 	fn.panoseMagic = 'P';
 	fn.underscore = '_';
 
-	strncpy(buf, (char *)&fn, sizeof(fn));
+	memcpy(buf, (char *)&fn, sizeof(fn));
 	strncpy(buf + sizeof(fn), fontName, ttfn->nameLen);
 	buf[fn.nameLen] = 0;
 	debug("ListFont \"%s\"\n", buf);
