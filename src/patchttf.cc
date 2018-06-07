@@ -77,11 +77,11 @@ patchttf(int argc, char **argv)
 		return -1;
 	}
 
-	int flen = st.st_size;
+	size_t flen = st.st_size;
 	std::vector<uint8_t> buf(flen + 3);
 	for (int ibuf = 0; ibuf < 3; ++ibuf)
 		buf[flen + ibuf] = 0;
-	printf("TTFsize = %d\n", flen);
+	printf("TTFsize = %zd\n", flen);
 
 	if (fread(buf.data(), 1, flen, fp) != flen) {
 		printf("Cannot read \"%s\"\n", inTTname.c_str());
@@ -96,7 +96,7 @@ patchttf(int argc, char **argv)
 		if (p[0] != '-' || p[1] != 'p')
 			return -i;
 
-		int addr = 0;
+		size_t addr = 0;
 		p = argv[i+1];
 		if (p[0] != '0' || p[1] != 'x')
 			return -i;
@@ -118,7 +118,7 @@ patchttf(int argc, char **argv)
 			nhex <<= 4;
 			nhex |= (c > '9') ? c - 'a' + 10 : c - '0';
 
-			printf("patch %05X = %02X -> %02X\n",
+			printf("patch %05zX = %02X -> %02X\n",
 			       addr, buf[addr], nhex);
 
 			buf[addr] = nhex;
