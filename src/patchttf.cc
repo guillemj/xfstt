@@ -74,6 +74,7 @@ patchttf(int argc, char **argv)
 	struct stat st;
 	if (fstat(fileno(fp), &st) < 0) {
 		printf("Cannot stat \"%s\"\n", inTTname.c_str());
+		fclose(fp);
 		return -1;
 	}
 
