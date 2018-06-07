@@ -26,7 +26,7 @@ Rasterizer::Rasterizer(int _grid_fitting, int _anti_aliasing,
 		       int _sizeTwilight, int _sizePoints, int _sizeContours,
 		       int _sizeStack, int _sizeCvt, int _sizeStor,
 		       int _sizeFDefs):
-	stackbase(0), ttFont(0), status(INVALID_FONT),
+	stackbase(nullptr), ttFont(nullptr), status(INVALID_FONT),
 	sizeContours(_sizeContours), sizeStack(_sizeStack), sizeCvt(_sizeCvt),
 	sizeStor(_sizeStor), sizeFDefs(_sizeFDefs), sizeIDefs(0),
 	format(LOGSLP - 3),

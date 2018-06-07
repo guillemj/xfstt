@@ -187,7 +187,7 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 		info(_("Sync in directory \"%s/%s\".\n"), fontdir, ttdir);
 
 	DIR *dirp = opendir(".");
-	if (dirp == NULL)
+	if (dirp == nullptr)
 		return 0;
 
 	while (dirent *de = readdir(dirp)) {
@@ -310,7 +310,7 @@ ttSyncAll(bool gslist = false)
 	FILE *infoFile = fopen(ttinfofilename.c_str(), "wb");
 	FILE *nameFile = fopen(ttnamefilename.c_str(), "wb");
 
-	if (infoFile == NULL || nameFile == NULL) {
+	if (infoFile == nullptr || nameFile == nullptr) {
 		if (infoFile)
 			fclose(infoFile);
 		if (nameFile)
@@ -332,7 +332,7 @@ ttSyncAll(bool gslist = false)
 	int nfonts = ttSyncDir(infoFile, nameFile, ".", gslist);
 
 	DIR *dirp = opendir(".");
-	if (dirp == NULL) {
+	if (dirp == nullptr) {
 		fclose(infoFile);
 		fclose(nameFile);
 		return 0;
@@ -364,7 +364,7 @@ ttSyncAll(bool gslist = false)
 static int
 listXLFDFonts(char *pattern0, int index, char *buf)
 {
-	static TTFNdata *ttfn = 0;
+	static TTFNdata *ttfn = nullptr;
 	static int mapIndex = 0;
 
 	if (index == 0) {
@@ -436,12 +436,12 @@ listXLFDFonts(char *pattern0, int index, char *buf)
 static int
 listTTFNFonts(char *pattern, int index, char *buf)
 {
-	static TTFNdata *ttfn = 0;
+	static TTFNdata *ttfn = nullptr;
 
 	if (pattern[0] != '*' || pattern[1] != 0)
 		return -1;
 
-	if (index == 0 || ttfn == 0) {
+	if (index == 0 || ttfn == nullptr) {
 		ttfn = (TTFNdata *)(infoBase + sizeof(TTFNheader));
 	} else if ((char *)++ttfn >= infoBase + infoSize)
 		return -1;
@@ -487,7 +487,7 @@ findFont(Font fid)
 
 	debug("fid = %ld not found!\n", fid);
 
-	return 0;
+	return nullptr;
 }
 
 static XFSFont *
@@ -509,17 +509,17 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 	      fp->point[0], fp->pixel[0], fp->resolution[0]);
 
 	if (!ttFont)
-		return 0;
+		return nullptr;
 	if (ttFont->badFont()) {
 		delete ttFont;
-		return 0;
+		return nullptr;
 	}
 
 	XFSFont *xfs = findFont(0);
 	if (!xfs) {
 		debug("Too many open fonts!\n");
 		delete ttFont;
-		return 0;
+		return nullptr;
 	}
 
 	xfs->fid = fid;
@@ -577,7 +577,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 			error(_("entering memory starved mode.\n"));
 			xfs->fid = 0;	// Mark font slot as not used.
 			delete ttFont;
-			return 0;
+			return nullptr;
 		}
 
 	raster->getFontExtent(&xfs->fe);
@@ -592,7 +592,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 		xfs->fe.bitmaps = xfs->fe.buffer + bmpoff;
 	} else {
 		xfs->fid = 0;	// Mark font slot as not used.
-		xfs = 0;
+		xfs = nullptr;
 		delete ttFont;
 	}
 
@@ -603,7 +603,7 @@ static XFSFont *
 openTTFN(Rasterizer *raster, char *ttfnName, FontParams *fp, int fid)
 {
 	if (tolower(ttfnName[0]) != 't' || tolower(ttfnName[1]) != 't')
-		return 0;
+		return nullptr;
 
 	// parse attributes
 	debug("point %d, pixel %d, res %d\n",
@@ -613,7 +613,7 @@ openTTFN(Rasterizer *raster, char *ttfnName, FontParams *fp, int fid)
 	for (ttfnName += 2;;) {
 		char c = *(ttfnName++);
 		if (c == '\0')
-			return 0;
+			return nullptr;
 		if (c == '_')
 			break;
 		int neg = 0;
@@ -644,7 +644,7 @@ openTTFN(Rasterizer *raster, char *ttfnName, FontParams *fp, int fid)
 			fp->flags = val;
 			break;
 		default:
-			return 0;
+			return nullptr;
 		}
 	}
 
@@ -697,7 +697,7 @@ openTTFN(Rasterizer *raster, char *ttfnName, FontParams *fp, int fid)
 					encodings[0]);
 		}
 	}
-	return 0;
+	return nullptr;
 }
 
 static int
@@ -713,10 +713,10 @@ static XFSFont *
 openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 {
 	if (xlfdName[0] != '-')
-		return 0;
+		return nullptr;
 
 	int delim = 0;
-	Encoding *encoding = 0;
+	Encoding *encoding = nullptr;
 	for (char *p = xlfdName; *p; ++p) {
 		*p = tolower(*p);
 		if (*p == '-')
@@ -771,7 +771,7 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 		}
 	}
 
-	return 0;
+	return nullptr;
 }
 
 // returns > 0 if ok
@@ -802,7 +802,7 @@ openTTFdb()
 		return 0;
 	}
 	infoSize = statbuf.st_size;
-	infoBase = (char *)mmap(0L, infoSize, PROT_READ, MAP_SHARED, fd, 0L);
+	infoBase = (char *)mmap(nullptr, infoSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
 
 	if (infoBase == MAP_FAILED) {
@@ -837,7 +837,7 @@ openTTFdb()
 		return 0;
 	}
 	nameSize = statbuf.st_size;
-	nameBase = (char *)mmap(0L, nameSize, PROT_READ, MAP_SHARED, fd, 0L);
+	nameBase = (char *)mmap(nullptr, nameSize, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
 
 	if (nameBase == MAP_FAILED) {
@@ -981,7 +981,7 @@ fs_connection_setup(fs_conn &conn)
 		hints.ai_socktype = SOCK_STREAM;
 		asprintf(&service, "%d", conn.port);
 
-		err = getaddrinfo(NULL, service, &hints, &res);
+		err = getaddrinfo(nullptr, service, &hints, &res);
 
 		free(service);
 
@@ -1037,13 +1037,13 @@ fs_connection_new(fs_conn &conn)
 	for (n = 0; n < conn.sd_list_used; n++)
 		FD_SET(conn.sd_list[n], &sd_set);
 
-	select(conn.sd_max + 1, &sd_set, 0L, 0L, 0L);
+	select(conn.sd_max + 1, &sd_set, nullptr, nullptr, nullptr);
 
 	int sd = 0;
 
 	for (n = 0; n < conn.sd_list_used; n++) {
 		if (FD_ISSET(conn.sd_list[n], &sd_set)) {
-			sd = accept(conn.sd_list[n], NULL, NULL);
+			sd = accept(conn.sd_list[n], nullptr, nullptr);
 			break;
 		}
 	}
@@ -1998,7 +1998,7 @@ signal_setup(int sig_num, void (*sig_handler)(int))
 	sig.sa_flags = SA_RESTART;
 	sig.sa_handler = sig_handler;
 
-	sigaction(sig_num, &sig, NULL);
+	sigaction(sig_num, &sig, nullptr);
 }
 
 static void
@@ -2070,7 +2070,7 @@ main(int argc, char **argv)
 			if (!Encoding::parse(maplist, encodings, MAXENC)) {
 				error(_("illegal encoding!\n"));
 				info(_("valid encodings are:\n"));
-				for (Encoding *maps = 0;;) {
+				for (Encoding *maps = nullptr;;) {
 					maps = Encoding::enumerate(maps);
 					if (!maps)
 						exit(0);

@@ -66,9 +66,9 @@ NameTable::getString(int pfId, int strId)
 			char *p = (char *)base + strBase + strOffset;
 
 			if (p <= (char *)base)
-				return 0;
+				return nullptr;
 			if (p >= (char *)base + getLength())
-				return 0;
+				return nullptr;
 
 			return string(p, strLength);
 		}
@@ -79,7 +79,7 @@ NameTable::getString(int pfId, int strId)
 		const string p = getString(3, strId);
 
 		if (p.empty())
-			return 0;
+			return nullptr;
 
 		int len = p.size() >> 1;
 
@@ -92,5 +92,5 @@ NameTable::getString(int pfId, int strId)
 		return convbuf;
 	}
 
-	return 0;
+	return nullptr;
 }

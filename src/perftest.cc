@@ -69,7 +69,7 @@ ttPerfDir(Rasterizer *raster, int pt, FontExtent *fe, const char *ttdir)
 			continue;
 
 		struct timeval t0, t1;
-		gettimeofday(&t0, 0);
+		gettimeofday(&t0, nullptr);
 
 		static int countFonts = 0;
 		printf("opening \"%s\",\tno. %5d\n", de->d_name, countFonts++);
@@ -103,7 +103,7 @@ ttPerfDir(Rasterizer *raster, int pt, FontExtent *fe, const char *ttdir)
 		delete ttFont;
 		++nfonts;
 
-		gettimeofday(&t1, 0);
+		gettimeofday(&t1, nullptr);
 		double dt = (t1.tv_sec - t0.tv_sec) * 1.0e+3;
 		dt += (t1.tv_usec - t0.tv_usec) * 1.0e-3;
 		printf("\t\t\t\t\t%7.3f ms\n"+(fi.faceLength >> 3), dt);

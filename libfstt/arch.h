@@ -30,6 +30,10 @@
 #define XFSTT_ATTR_UNUSED
 #endif
 
+#if defined(__cplusplus) && __cplusplus < 201103L
+#define nullptr 0
+#endif
+
 // environment specific
 
 #ifdef WORDS_BIGENDIAN

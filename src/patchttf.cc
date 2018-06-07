@@ -128,7 +128,7 @@ patchttf(int argc, char **argv)
 	// update the checksums
 	int nTables = (buf[4] << 8) + buf[5];
 	//printf("nTables = %d\n", nTables);
-	uint8_t *headTable = 0;
+	uint8_t *headTable = nullptr;
 	for (int iTable = 0; iTable < nTables; ++iTable) {
 		uint8_t *b = &(buf.data()[12 + iTable * 16]);
 		int name = (b[0] << 24) + (b[1] << 16) + (b[2] << 8) + b[3];

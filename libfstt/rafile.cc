@@ -168,23 +168,23 @@ RandomAccessFile::RandomAccessFile(const char *fileName)
 	int fd = open(fileName, O_RDONLY);
 	if (fd < 0) {
 		debug("Cannot open \"%s\"\n", fileName);
-		ptr = absbase = base = 0;
+		ptr = absbase = base = nullptr;
 		return;
 	}
 	struct stat st;
 	if (fstat(fd, &st) < 0) {
 		debug("Cannot stat \"%s\"\n", fileName);
-		ptr = absbase = base = 0;
+		ptr = absbase = base = nullptr;
 		length = 0;
 		close(fd);
 		return;
 	}
 	length = st.st_size;
-	base = (uint8_t *)mmap(0L, length, PROT_READ, MAP_SHARED, fd, 0L);
+	base = (uint8_t *)mmap(nullptr, length, PROT_READ, MAP_SHARED, fd, 0L);
 	close(fd);
 	if (base == MAP_FAILED) {
 		debug("MMap failed '%s'\n", strerror(errno));
-		ptr = absbase = base = 0;
+		ptr = absbase = base = nullptr;
 		return;
 	}
 	ptr = absbase = base;

@@ -30,8 +30,8 @@ static unsigned short boxtable[32] = {
 	0x252c, 0x2502, 0x0020, 0x0020, 0x2510, 0x0020, 0x0020, 0x0020,
 };
 
-Encoding *Encoding::first = 0;
-Encoding *Encoding::last = 0;
+Encoding *Encoding::first = nullptr;
+Encoding *Encoding::last = nullptr;
 
 Encoding::Encoding(const string mapname):
 	Name(mapname)
@@ -42,7 +42,7 @@ Encoding::Encoding(const string mapname):
 		last->next = this;
 
 	last = this;
-	next = 0;
+	next = nullptr;
 }
 
 static string
@@ -94,17 +94,17 @@ Encoding::find(string mapname)
 			// FIXME: list is broken. Should NOT be circular. 
 			//        however for some reason it is. Must figure
                         //        out why - sjc 1999-10-16
-			return 0;
+			return nullptr;
 		}
 	}
-	return 0;
+	return nullptr;
 }
 
 Encoding *
 Encoding::enumerate(Encoding *iterator)
 {
 	if (iterator == last) {
-		return 0; // FIXME: see find function FIXME
+		return nullptr; // FIXME: see find function FIXME
 	}
 	return iterator ? iterator->next : first;
 }
@@ -1595,5 +1595,5 @@ Encoding::getDefault(Encoding **maps, int maxcodes)
 {
 	maps[0] = &exemplar_iso8859_1;
 	if (maxcodes <= 1) return;
-	maps[1] = 0;
+	maps[1] = nullptr;
 }

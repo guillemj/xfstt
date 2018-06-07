@@ -109,7 +109,7 @@ void
 Rasterizer::calcCVT()
 {
 	CvtTable* cvtTab = ttFont->cvtTable;
-	if (cvtTab == 0)
+	if (cvtTab == nullptr)
 		return;
 
 	cvtTab->reset();
@@ -124,7 +124,7 @@ Rasterizer::calcCVT()
 		debug("cvt[%3d] = %5d  -> %5d\n", i, val, cvt[i]);
 	}
 
-	if (ttFont->prepTable == 0)
+	if (ttFont->prepTable == nullptr)
 		return;
 
 	debug("=== starting glyph prep ===\n");

@@ -83,7 +83,7 @@ public:
 	}
 	// XXX:	virtual ~RandomAccessFile()	{}
 
-	int openError()			{ return (absbase == 0); }
+	int openError()			{ return (absbase == nullptr); }
 	void closeRAFile();
 
 	void reset()			{ ptr = base; }

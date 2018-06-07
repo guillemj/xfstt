@@ -26,14 +26,14 @@
 
 TTFont::TTFont(const char *fileName, int infoOnly):
 	RandomAccessFile(fileName),
-	nameTable(0), headTable(0), maxpTable(0),
-	cmapTable(0), locaTable(0), glyphTable(0),
-	fpgmTable(0), prepTable(0), cvtTable(0),
-	hheaTable(0), hmtxTable(0), os2Table(0),
-	ltshTable(0), hdmxTable(0), vdmxTable(0),
-	gaspTable(0), kernTable(0), //postTable(0),
-	ebdtTable(0), eblcTable(0),
-	mortTable(0), vheaTable(0)
+	nameTable(nullptr), headTable(nullptr), maxpTable(nullptr),
+	cmapTable(nullptr), locaTable(nullptr), glyphTable(nullptr),
+	fpgmTable(nullptr), prepTable(nullptr), cvtTable(nullptr),
+	hheaTable(nullptr), hmtxTable(nullptr), os2Table(nullptr),
+	ltshTable(nullptr), hdmxTable(nullptr), vdmxTable(nullptr),
+	gaspTable(nullptr), kernTable(nullptr), //postTable(nullptr),
+	ebdtTable(nullptr), eblcTable(nullptr),
+	mortTable(nullptr), vheaTable(nullptr)
 {
 	debug("TTFont(\"%s\");\n", fileName);
 
@@ -54,7 +54,7 @@ TTFont::TTFont(const char *fileName, int infoOnly):
 		if (length == 0)
 			continue;
 		if (offset >= getLength() || offset + length > getLength()) {
-			headTable = 0;
+			headTable = nullptr;
 			return;
 		}
 		if (infoOnly && name != NAME_MAGIC && name != OS2_MAGIC
@@ -139,7 +139,7 @@ TTFont::TTFont(const char *fileName, int infoOnly):
 	if (!(nameTable && headTable)) {
 		if (headTable)
 			delete headTable;
-		headTable = 0;
+		headTable = nullptr;
 	}
 
 	if (infoOnly)
@@ -148,10 +148,10 @@ TTFont::TTFont(const char *fileName, int infoOnly):
 	if (!(maxpTable && cmapTable && locaTable && glyphTable)) {
 		if (headTable)
 			delete headTable;
-		headTable = 0;
+		headTable = nullptr;
 	}
 
-	if (headTable == 0) {
+	if (headTable == nullptr) {
 		debug("Incomplete TrueType file\n");
 		return;
 	}
@@ -337,7 +337,7 @@ void
 TTFont::updateChecksums()
 {
 	uint8_t *buf = base;
-	uint8_t *headTable = 0;
+	uint8_t *headTable = nullptr;
 	int nTables = (buf[4] << 8) + buf[5];
 
 	debug("nTables = %d\n", nTables);

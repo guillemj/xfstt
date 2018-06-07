@@ -167,7 +167,7 @@ new_color(xcb_connection_t *c, xcb_colormap_t cmap,
 	uint32_t color;
 
 	cookie = xcb_alloc_color(c, cmap, r, g, b);
-	reply = xcb_alloc_color_reply(c, cookie, NULL);
+	reply = xcb_alloc_color_reply(c, cookie, nullptr);
 	if (!reply)
 		return 0;
 
@@ -187,7 +187,7 @@ screen_of_display(xcb_connection_t *c, int screen)
 		if (screen == 0)
 			return iter.data;
 
-	return NULL;
+	return nullptr;
 }
 
 int
@@ -215,10 +215,10 @@ main(int argc, char** argv)
 
 	int done = 0;
 
-	c = xcb_connect(NULL, &screen_nr);
+	c = xcb_connect(nullptr, &screen_nr);
 
 	screen = screen_of_display(c, screen_nr);
-	if (screen == NULL)
+	if (screen == nullptr)
 		return 1;
 
 	root_visual = screen->root_visual;
