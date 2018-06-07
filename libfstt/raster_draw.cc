@@ -242,10 +242,10 @@ Rasterizer::drawBitmap(uint8_t *const bmp, int height, int dX)
 
 #if DEBUG
 	for (Dot *i1 = dots[0] + 1; i1 <= dots0; ++i1)
-		debug("dh[%3d] = (%5d %5d)\n", i1 - dots[0], i1->y, i1->x);
+		debug("dh[%3zd] = (%5d %5d)\n", i1 - dots[0], i1->y, i1->x);
 	debug("\n");
 	for (Dot* i2 = dots[1] + 1; i2 <= dots1; ++i2)
-		debug("dv[%3d] = (%5d %5d)\n", i2 - dots[1], i2->x, i2->y);
+		debug("dv[%3zd] = (%5d %5d)\n", i2 - dots[1], i2->x, i2->y);
 	debug("\n");
 #endif
 }

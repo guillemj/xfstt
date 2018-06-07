@@ -235,7 +235,7 @@ inline int
 Rasterizer::newMeasure(const Point &p2, const Point &p1)
 {
 	int dist = gs.absNewMeasure(p2.xnow - p1.xnow, p2.ynow - p1.ynow);
-	debug("\nnewMeasure p[%d]-p[%d] = %f",
+	debug("\nnewMeasure p[%zd]-p[%zd] = %f",
 		 &p2 - p[1], &p1 - p[1], dist / FSHIFT);
 	
 	return dist;
@@ -245,7 +245,7 @@ inline int
 Rasterizer::oldMeasure(const Point &p2, const Point &p1)
 {
 	int dist = gs.absOldMeasure(p2.xold - p1.xold, p2.yold - p1.yold);
-	debug("\noldMeasure p[%d]-p[%d] = %f",
+	debug("\noldMeasure p[%zd]-p[%zd] = %f",
 		 &p2 - p[1], &p1 - p[1], dist / FSHIFT);
 	return dist;
 }
@@ -717,13 +717,13 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 
 	case GC0:
 		pp = &gs.zp2[*stack];
-		debug("GC0 p[%d][%d]\t", gs.zp2 == p[1], pp - gs.zp2);
+		debug("GC0 p[%d][%zd]\t", gs.zp2 == p[1], pp - gs.zp2);
 		*stack = gs.absNewMeasure(pp->xnow, pp->ynow);
 		debug("\t=> %d", *stack);
 		break;
 	case GC1:
 		pp = &gs.zp2[*stack];
-		debug("GC1 p[%d][%d]\t", gs.zp2 == p[1], pp - gs.zp2);
+		debug("GC1 p[%d][%zd]\t", gs.zp2 == p[1], pp - gs.zp2);
 		*stack = gs.absOldMeasure(pp->xold, pp->yold);
 		debug("\t=> %d", *stack);
 		break;
@@ -801,7 +801,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		n = gs.absNewMeasure(pp->xnow - pp->xold, pp->ynow - pp->yold);
 		for (m = gs.loop; --m >= 0;) {
 			int i = *(stack--);
-			debug("SHP * %d p[%d], rp = p[%d]", m, i, pp-p[1]);
+			debug("SHP * %d p[%d], rp = p[%zd]", m, i, pp - p[1]);
 			debug(" moved by %f", n / FSHIFT);
 			gs.movePoint(gs.zp2[i], n);
 		}
@@ -813,7 +813,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		m = *(stack--);
 		assert(m >= 0 && m < sizeContours);
 		pp = (opc & 1) ? &gs.zp0[gs.rp1] : &gs.zp1[gs.rp2];
-		debug("SHC%d rp[%d]", opc & 1, pp - p[1]);
+		debug("SHC%d rp[%zd]", opc & 1, pp - p[1]);
 		n = gs.absNewMeasure(pp->xnow - pp->xold, pp->ynow - pp->yold);
 		int i = (m <= 0) ? 0 : endPoints[m-1] + 1;
 		m = (gs.zp2 == p[0]) ? nPoints[0] : endPoints[m];
@@ -835,7 +835,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		assert(m >= 0 && m <= 1);
 		for (Point *pp1 = p[m], *pp2 = pp1 + nPoints[m]; pp1 < pp2; ++pp1) {
 			if (pp1 == pp) continue;
-			debug("\nSHZ p[%d] by %f", pp1 - p[m], n / FSHIFT);
+			debug("\nSHZ p[%zd] by %f", pp1 - p[m], n / FSHIFT);
 			debug("\t(%d %d) -> ", pp1->xnow, pp1->ynow);
 			pp1->xnow += (n * gs.move_x) >> 14;
 			pp1->ynow += (n * gs.move_y) >> 14;
@@ -1054,8 +1054,8 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		m = *(stack--);
 
 		debug("ISECT p[%d] ", m);
-		debug("between p[%d]-p[%d] ", pp1-gs.zp1, pp2-gs.zp1);
-		debug("and p[%d]-p[%d] ", pp3-gs.zp0, pp4-gs.zp0);
+		debug("between p[%zd]-p[%zd] ", pp1 - gs.zp1, pp2 - gs.zp1);
+		debug("and p[%zd]-p[%zd] ", pp3 - gs.zp0, pp4 - gs.zp0);
 
 		int f1 = (pp1->xnow - pp3->xnow) * (pp4->ynow - pp3->ynow) -
 			 (pp1->ynow - pp3->ynow) * (pp4->xnow - pp3->xnow);
@@ -1102,7 +1102,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		pp = p[1];
 		for (m = 0; m < nEndPoints; ++m) {
 			Point *last = p[1] + endPoints[m];
-			debug("IUP0 p[%d .. %d]", pp - p[1], last - p[1]);
+			debug("IUP0 p[%zd .. %zd]", pp - p[1], last - p[1]);
 			doIUP0(pp, last);
 			pp = last + 1;
 		}
@@ -1111,7 +1111,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		pp = p[1];
 		for (m = 0; m < nEndPoints; ++m) {
 			Point *last = p[1] + endPoints[m];
-			debug("IUP1 p[%d .. %d]", pp - p[1], last - p[1]);
+			debug("IUP1 p[%zd .. %zd]", pp - p[1], last - p[1]);
 			doIUP1(pp, last);
 			pp = last + 1;
 		}
@@ -1636,7 +1636,7 @@ Rasterizer::iup0(Point *const pp, const Point *const p1, const Point *const p2)
 	int dold21 = p2->yold - p1->yold;
 	int doldp1 = pp->yold - p1->yold;
 
-	debug("\np[%d] between p[%d] and p[%d]", pp - p[1], p1 - p[1],
+	debug("\np[%zd] between p[%zd] and p[%zd]", pp - p[1], p1 - p[1],
 	      p2 - p[1]);
 	debug("\nd21o dp1o %f %f", dold21 / FSHIFT, doldp1 / FSHIFT);
 
@@ -1662,7 +1662,7 @@ Rasterizer::iup1(Point *const pp, const Point *const p1, const Point *const p2)
 	int dold21 = p2->xold - p1->xold;
 	int doldp1 = pp->xold - p1->xold;
 
-	debug("\np[%d] between p[%d] and p[%d]", pp - p[1], p1 - p[1],
+	debug("\np[%zd] between p[%zd] and p[%zd]", pp - p[1], p1 - p[1],
 	      p2 - p[1]);
 	debug("\nd21o dp1o %f %f", dold21 / FSHIFT, doldp1 / FSHIFT);
 

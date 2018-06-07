@@ -1463,7 +1463,7 @@ fs_list_fonts(fs_client &client)
 		return;
 
 	pattern[req->nbytes] = 0;
-	debug("FS_ListFonts \"%s\" * %ld\n", pattern, req->maxNames);
+	debug("FS_ListFonts \"%s\" * %u\n", pattern, req->maxNames);
 
 	fsListFontsReply reply = { 0 };
 	reply.type = FS_Reply;
@@ -1496,7 +1496,7 @@ fs_list_fonts(fs_client &client)
 		buf += len;
 		++reply.nFonts;
 	}
-	debug("Found %ld fonts\n", reply.nFonts);
+	debug("Found %u fonts\n", reply.nFonts);
 	reply.length = (sizeof(reply) + (buf - client.replybuf)
 	               + 3) >> 2;
 
@@ -1559,7 +1559,7 @@ fs_open_bitmap_font(fs_client &client, FontParams &fp0, Rasterizer *raster)
 		fs_client_error(client, FSBadName);
 		debug(" not found\n");
 	}
-	debug("fhint = %04lX, fmask = %04lX, fid = %ld\n",
+	debug("fhint = %04X, fmask = %04X, fid = %u\n",
 	      req->format_hint, req->format_mask, req->fid);
 }
 
@@ -1568,7 +1568,7 @@ fs_query_x_info(fs_client &client)
 {
 	fsQueryXInfoReq *req = (fsQueryXInfoReq *)client.buf;
 
-	debug("FS_QueryXInfo fid = %ld\n", req->id);
+	debug("FS_QueryXInfo fid = %u\n", req->id);
 
 	struct {
 		fsQueryXInfoReply s1;
@@ -1654,9 +1654,9 @@ fs_query_x_extents(fs_client &client)
 {
 	fsQueryXExtents16Req *req = (fsQueryXExtents16Req *)client.buf;
 
-	debug("FS_QueryXExtents%s fid = %ld, ",
+	debug("FS_QueryXExtents%s fid = %u, ",
 	      (req->reqType == FS_QueryXExtents8 ? "8" : "16"), req->fid);
-	debug("range=%d, nranges=%ld\n", req->range, req->num_ranges);
+	debug("range=%d, nranges=%u\n", req->range, req->num_ranges);
 
 	int item_size = (req->reqType == FS_QueryXExtents8) ? 1 : 2;
 	int expected_size = sz_fsQueryXExtents8Req
@@ -1747,9 +1747,9 @@ fs_query_x_bitmaps(fs_client &client)
 {
 	fsQueryXBitmaps16Req *req = (fsQueryXBitmaps16Req *)client.buf;
 
-	debug("FS_QueryXBitmaps16 fid = %ld, fmt = %04lX\n",
+	debug("FS_QueryXBitmaps16 fid = %u, fmt = %04X\n",
 	      req->fid, req->format);
-	debug("range=%d, nranges=%ld\n", req->range, req->num_ranges);
+	debug("range=%d, nranges=%u\n", req->range, req->num_ranges);
 
 	int item_size = (req->reqType == FS_QueryXExtents8) ? 1: 2;
 	int expected_size = sz_fsQueryXBitmaps8Req
@@ -1867,7 +1867,7 @@ fs_close_font(fs_client &client)
 {
 	fsCloseReq *req = (fsCloseReq *)client.buf;
 
-	debug("FS_CloseFont fid = %ld\n", req->id);
+	debug("FS_CloseFont fid = %u\n", req->id);
 
 	XFSFont *xfs = fs_find_font(req->id, client);
 	if (xfs) {
