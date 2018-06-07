@@ -32,9 +32,11 @@ EbdtTable::readBitmap(int format, uint8_t *bitmap,
                       GlyphMetrics *gm XFSTT_ATTR_UNUSED)
 {
 	int height, width;
+/*
 	int hBearX, hBearY;
 	int vBearX, vBearY;
 	int hAdv, vAdv;
+*/
 
 	// get glyph metric
 	switch (format) {
@@ -43,9 +45,9 @@ EbdtTable::readBitmap(int format, uint8_t *bitmap,
 	case 8:	// small metrics
 		height = readUByte();
 		width = readUByte();
-		hBearX = readSByte();
-		hBearY = readSByte();
-		hAdv = readUByte();
+		/* hBearX = */readSByte();
+		/* hBearY = */readSByte();
+		/* hAdv = */readUByte();
 		break;
 	case 3:	// obsolete
 	case 4:	// unsupported
@@ -60,12 +62,12 @@ EbdtTable::readBitmap(int format, uint8_t *bitmap,
 	case 9:	// big metrics
 		height = readUByte();
 		width = readUByte();
-		hBearX = readSByte();
-		hBearY = readSByte();
-		hAdv = readUByte();
-		vBearX = readSByte();
-		vBearY = readSByte();
-		vAdv = readUByte();
+		/* hBearX = */readSByte();
+		/* hBearY = */readSByte();
+		/* hAdv = */readUByte();
+		/* vBearX = */readSByte();
+		/* vBearY = */readSByte();
+		/* vAdv = */readUByte();
 		break;
 	}
 
