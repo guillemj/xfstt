@@ -69,12 +69,12 @@ EblcTable::readStrike(int glyphNo,
 	/* pad1 = */ readSByte();
 	/* pad2 = */ readSByte();
 
-	int startGlyph = readUShort();
-	int endGlyph = readUShort();
-	int ppemx = readUByte();
-	int ppemy = readUByte();
+	DEBUG_ATTR_UNUSED int startGlyph = readUShort();
+	DEBUG_ATTR_UNUSED int endGlyph = readUShort();
+	DEBUG_ATTR_UNUSED int ppemx = readUByte();
+	DEBUG_ATTR_UNUSED int ppemy = readUByte();
 	/* bitDepth = */ readUByte();	// should be 1
-	int flags = readSByte();	// 1 hmetric, 2 vmetric
+	DEBUG_ATTR_UNUSED int flags = readSByte();	// 1 hmetric, 2 vmetric
 
 	debug("EBLC\nglyph(%3d - %3d), size(%2d, %2d), flags %d\n",
 	      startGlyph, endGlyph, ppemx, ppemy, flags);
@@ -104,8 +104,8 @@ void
 EblcTable::readSubTable(int first, int last)
 {
 	int idxFormat = readUShort();
-	int imgFormat = readUShort();
-	int imageOffset = readUInt();
+	DEBUG_ATTR_UNUSED int imgFormat = readUShort();
+	DEBUG_ATTR_UNUSED int imageOffset = readUInt();
 
 	debug("idxfmt %d, imgfmt %d, imgofs 0x%05X\n",
 	      idxFormat, imgFormat, imageOffset);
