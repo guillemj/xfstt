@@ -26,6 +26,7 @@
 
 TTFont::TTFont(const char *fileName, int infoOnly):
 	RandomAccessFile(fileName),
+	endPoints(nullptr), points(nullptr),
 	nameTable(nullptr), headTable(nullptr), maxpTable(nullptr),
 	cmapTable(nullptr), locaTable(nullptr), glyphTable(nullptr),
 	fpgmTable(nullptr), prepTable(nullptr), cvtTable(nullptr),
