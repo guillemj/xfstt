@@ -1,3 +1,45 @@
+1.10 (2019-02-09)
+
+	Bug fixes and improvements:
+	 · libfstt, xfstt: Check return values from syscalls.
+	 · libfstt: Fix file descriptor leak on RandomAccessFile ctor error.
+	 · libfstt: Do not use uninitialized fi.faceLength.
+	 · libfstt, patchttf: Only update checksum if we find the headTable.
+	 · libfstt: Initialize length in RandomAccessFile constructor.
+	 · libfstt, xfstt: Fix format strings in debug() calls.
+	 · libfstt: Set length to 0 on RandomAccessFile constructor error.
+	 · libfstt: Initialize some class members in the constructor.
+	 · xfstt: Remove unused fonts.alias handling.
+	 · xfstt: Fix file descriptor leaks.
+	 · xfstt: Use fstat() instead of stat() to avoid TOCTOU.
+	 · xfstt: Initialize key TTFNheader member.
+	 · xfstt: Fix euro currency symbol mapping for ISO-8859-9 to Unicode.
+	 · xfstt: Fix memory leaks for cache filenames.
+	 · xfstt: Fix font database file descriptor leaks.
+	 · xfstt: Fix socket descriptor leak.
+	 · xfstt: On socket setup errors return early.
+	 · xfstt: Assign defaultres to the correct FontParams variable.
+	 · patchttf: Fix memory leaks for cache file buffer handling.
+	 · patchttf: Fix file descriptor leaks.
+	Documentation:
+	 · doc: Fix typos in code comments.
+	 · doc: Add a reference to the Apple TrueType spec.
+	 · Change "portions ©" to just "Copyright ©".
+	Code cleanup:
+	 · libfstt, xfstt: Remove register keyword usage.
+	 · libfstt: Change faceLength type from int to size_t.
+	 · libfstt: Mark EBDT format 5 as TODO.
+	 · libfstt: Add missing <string.h> when building with DEBUG.
+	 · libfstt: Add support for DEBUG_ATTR_UNUSED.
+	 · libfstt: Mark unused variables with DEBUG_ATTR_UNUSED.
+	 · libfstt: Comment out unused variables.
+	 · libfstt, xfstt: Use nullptr instead of NULL or literal 0.
+	 · xfstt: Refactor fs_working() into small functions.
+	 · xfstt: Use memcpy() instead of strncpy() to copy a struct.
+	 · patchttf: Fix variables type to match the ones being compared to.
+	Build system:
+	 · build: Add a new trivial autogen program.
+
 1.9.3 (2016-05-23)
 
 	Documentation:
