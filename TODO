@@ -1,5 +1,6 @@
 TODO list:
 
+ - run as non-root (ref: xfs bug <https://bugs.debian.org/50859>).
  - move all constants to configure space.
    - default ports.
  - add option to bind to specific interfaces.
