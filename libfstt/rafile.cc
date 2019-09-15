@@ -27,9 +27,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstddef>
+#include <cstdlib>
+#include <cstring>
 
 void *
 allocMem(int size)

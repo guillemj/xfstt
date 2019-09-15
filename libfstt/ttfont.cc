@@ -21,8 +21,8 @@
  */
 
 #include "ttf.h"
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 
 TTFont::TTFont(const char *fileName, int infoOnly):
 	RandomAccessFile(fileName),

@@ -24,19 +24,20 @@
 
 #define MAXFONTBUFSIZE (2048*2048)
 
-#include "ttf.h"
-#include "ttfn.h"
-
-#include <dirent.h>
-#include <string.h>
-#include <ctype.h>
-
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+
+#include <dirent.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#include <cctype>
+#include <cstring>
+#include <cstdlib>
+
+#include "ttf.h"
+#include "ttfn.h"
 
 #ifndef MAGNIFY
 	int MAGNIFY = 0;

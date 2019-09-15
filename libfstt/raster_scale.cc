@@ -20,7 +20,7 @@
  */
 
 #include "ttf.h"
-#include <limits.h>
+#include <climits>
 
 Rasterizer::Rasterizer(int _grid_fitting, int _anti_aliasing,
 		       int _sizeTwilight, int _sizePoints, int _sizeContours,

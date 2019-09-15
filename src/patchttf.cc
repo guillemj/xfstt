@@ -19,13 +19,14 @@
 
 #include "config.h"
 
+#include <sys/stat.h>
+
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+
 #include <string>
 #include <vector>
-
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>
 
 using std::string;
 

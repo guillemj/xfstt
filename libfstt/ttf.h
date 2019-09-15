@@ -37,9 +37,9 @@
 
 #include "config.h"
 
-#include <stdio.h>
-#include <assert.h>
-#include <stdint.h>
+#include <cassert>
+#include <cstdint>
+#include <cstdio>
 #include <string>
 
 #include "arch.h"

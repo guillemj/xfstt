@@ -20,7 +20,7 @@
  */
 
 #include "ttf.h"
-#include <math.h>	// we need sqrt() or hypot() for normalisation
+#include <cmath>	// we need sqrt() or hypot() for normalisation
 
 #define FSHIFT 1.0
 #define MEMSLACK 2

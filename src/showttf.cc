@@ -25,10 +25,10 @@
 #define STARTGLYF	6
 #define DEFAULT_FONT	"times.ttf"
 
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
 
 #include <X11/keysym.h>
 #include <xcb/xcb.h>

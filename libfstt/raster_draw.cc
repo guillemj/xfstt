@@ -20,8 +20,8 @@
  */
 
 #include "ttf.h"
-#include <limits.h>
-#include <string.h>
+#include <climits>
+#include <cstring>
 
 struct Dot {
 	int y, x;

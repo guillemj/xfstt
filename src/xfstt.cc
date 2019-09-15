@@ -39,7 +39,6 @@
 #define MINFONTBUFSIZE	(1 << 18)
 
 #include "gettext.h"
-#include <locale.h>
 #define _(str) gettext(str)
 #define N_(str) gettext_noop(str)
 #include "ttf.h"
@@ -49,27 +48,31 @@
 #include "mesg.h"
 
 #include <sys/types.h>
-#include <dirent.h>
-#include <string.h>
-#include <string>
-#include <ctype.h>
-
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <signal.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+
 #include <netinet/in.h>
+
+#include <dirent.h>
+#include <fcntl.h>
 #include <netdb.h>
 #include <time.h>
+#include <pwd.h>
+#include <unistd.h>
+
+#include <string>
+#include <cerrno>
+#include <clocale>
+#include <cctype>
+#include <cstring>
+#include <cstdlib>
+#include <csignal>
+
 #include <X11/fonts/FS.h>
 #include <X11/fonts/FSproto.h>
-#include <pwd.h>
-#include <errno.h>
 
 // if you want to read good code skip this hacked up file!
 
