@@ -69,8 +69,9 @@ AC_TYPE_SIGNAL
 AC_CHECK_FUNCS([gettimeofday pathconf munmap mkdir rmdir select socket])
 
 # Checks for i18n
+AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.7])
+AM_GNU_GETTEXT_VERSION([0.19.6])
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.19])
 
 AC_CONFIG_FILES([
 	Makefile
