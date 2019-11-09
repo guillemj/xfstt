@@ -2166,11 +2166,10 @@ main(int argc, char **argv)
 				setuid(newuid);
 				setgid(newgid);
 
-				Rasterizer *raster = new Rasterizer();
+				Rasterizer raster;
 				client.replybuf = (char *)allocMem(MAXREPLYSIZE);
-				fs_working(client, raster);
+				fs_working(client, &raster);
 				deallocMem(client.replybuf, MAXREPLYSIZE);
-				delete raster;
 
 				if (!inetdConnection)
 					shutdown(client.sd, 2);
