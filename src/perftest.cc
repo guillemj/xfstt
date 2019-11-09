@@ -82,26 +82,23 @@ ttPerfDir(Rasterizer *raster, int pt, FontExtent *fe, const char *ttdir)
 		if (!strcmp("GAELACH.TTF", de->d_name))
 			continue;
 
-		TTFont *ttFont = new TTFont(de->d_name);
-		if (ttFont->badFont()) {
-			delete ttFont;
+		TTFont ttFont(de->d_name);
+		if (ttFont.badFont())
 			continue;
-		}
 
 		FontInfo fi;
-		ttFont->getFontInfo(&fi);
+		ttFont.getFontInfo(&fi);
 		if (fi.faceLength > 31)
 			fi.faceLength = 31;
 		fi.faceName[fi.faceLength] = 0;
 		printf("TTF(\"%s\")", fi.faceName);
 
-		raster->useTTFont(ttFont);
+		raster->useTTFont(&ttFont);
 		raster->setPointSize(pt, 0, 0, pt, 96, 96);
 
-		numGlyphs += ttFont->maxpTable->getNumGlyphs();
+		numGlyphs += ttFont.maxpTable->getNumGlyphs();
 		raster->getFontExtent(fe);
 
-		delete ttFont;
 		++nfonts;
 
 		gettimeofday(&t1, nullptr);

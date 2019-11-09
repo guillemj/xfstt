@@ -297,8 +297,8 @@ main(int argc, char** argv)
 	xcb_flush(c);
 
 	raster = new Rasterizer();
-	TTFont *ttFont = new TTFont(ttFileName);
-	raster->useTTFont(ttFont);
+	TTFont ttFont(ttFileName);
+	raster->useTTFont(&ttFont);
 
 	state.size = 16;
 	state.angle = 0;
@@ -317,7 +317,7 @@ main(int argc, char** argv)
 			}
 #endif
 		{
-			//ttFont->getGlyphNo16(state.glyphNo);
+			//ttFont.getGlyphNo16(state.glyphNo);
 			fprintf(stderr, "gno2 %d\n", state.glyphNo);
 			fflush(stderr);
 			glyph2image(&state, &img);
@@ -422,10 +422,10 @@ main(int argc, char** argv)
 			case XK_Control_R:
 				goto expose;
 			default:
-				// XXX: glyphNo = ttFont->getGlyphNo16(0x20AC);
+				// XXX: glyphNo = ttFont.getGlyphNo16(0x20AC);
 
 				// FIXME: need keysym name.
-				state.glyphNo = ttFont->getGlyphNo16(ksym);
+				state.glyphNo = ttFont.getGlyphNo16(ksym);
 				// printf("key = \"%s\" -> %d\n", keyname, glyphNo);
 				printf("key = %c -> %d\n", ksym, state.glyphNo);
 				glyph2image(&state, &img);
@@ -458,7 +458,6 @@ main(int argc, char** argv)
 		deallocMem(bitmap, BMPSIZE);
 
 	delete raster;
-	delete ttFont;
 	delete [] pixmap;
 
 	cleanupMem();

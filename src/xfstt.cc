@@ -216,14 +216,12 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 		char pathName[ttdir_len + namelen + 2];
 		sprintf(pathName, "%s/%s", ttdir, de->d_name);
 
-		TTFont *ttFont = new TTFont(de->d_name, 1);
-		if (!ttFont || ttFont->badFont()) {
-			delete ttFont;
+		TTFont ttFont(de->d_name, 1);
+		if (ttFont.badFont())
 			continue;
-		}
 
 		FontInfo fi;
-		ttFont->getFontInfo(&fi);
+		ttFont.getFontInfo(&fi);
 
 		TTFNdata info = { 0 };
 		info.nameOfs = ftell(nameFile);
@@ -245,7 +243,7 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 		else
 			xlfd_templ += ttdir;
 
-		string xlfd = ttFont->getXLFDbase(xlfd_templ);
+		string xlfd = ttFont.getXLFDbase(xlfd_templ);
 		info.xlfdLen = xlfd.length();
 		fwrite((void *)xlfd.c_str(), 1, info.xlfdLen, nameFile);
 		fputc('\0', nameFile);
@@ -265,7 +263,6 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 
 		fwrite((void *)&info, 1, sizeof(info), infoFile);
 
-		delete ttFont;
 		++nfonts;
 	}
 	closedir(dirp);
