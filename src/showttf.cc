@@ -227,7 +227,7 @@ main(int argc, char** argv)
 
 	gc = xcb_generate_id(c);
 
-	uint32_t mask;
+	uint32_t mask = 0;
 	uint32_t values[5];
 
 	mask |= XCB_GC_FUNCTION;
