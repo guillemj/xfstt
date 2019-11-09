@@ -64,6 +64,7 @@
 #include <unistd.h>
 
 #include <string>
+#include <vector>
 #include <cerrno>
 #include <clocale>
 #include <cctype>
@@ -107,9 +108,7 @@ struct fs_conn {
 	bool listen_inet;
 	int port;
 	int sd_max;
-	int *sd_list;
-	int sd_list_size;
-	int sd_list_used;
+	std::vector<int> sd_list;
 };
 
 #define MAXREQSIZE 4096
@@ -889,7 +888,7 @@ fs_connection_setup_inet(fs_conn &conn, struct addrinfo *res)
 	int inet_ports = 0;
 	const int on = 1;
 
-	for (; res && conn.sd_list_used < conn.sd_list_size; res = res->ai_next) {
+	for (; res; res = res->ai_next) {
 		int sd;
 
 		sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
@@ -917,7 +916,7 @@ fs_connection_setup_inet(fs_conn &conn, struct addrinfo *res)
 		}
 
 		listen(sd, 1);
-		conn.sd_list[conn.sd_list_used++] = sd;
+		conn.sd_list.push_back(sd);
 		inet_ports++;
 	}
 
@@ -966,7 +965,7 @@ fs_connection_setup(fs_conn &conn)
 			return -1;
 		} else {
 			listen(sd, 1);
-			conn.sd_list[conn.sd_list_used++] = sd;
+			conn.sd_list.push_back(sd);
 		}
 		umask(old_umask);
 	}
@@ -1013,18 +1012,18 @@ fs_connection_setup(fs_conn &conn)
 			return -1;
 		}
 		listen(sd, 1);
-		conn.sd_list[conn.sd_list_used++] = sd;
+		conn.sd_list.push_back(sd);
 #endif
 	}
 
 	conn.sd_max = 0;
 
-	for (int n = 0; n < conn.sd_list_used; n++) {
+	for (int n = 0; n < conn.sd_list.size(); n++) {
 		if (conn.sd_list[n] > conn.sd_max)
 			conn.sd_max = conn.sd_list[n];
 	}
 
-	debug("connection setup (sockets = %d)\n", conn.sd_list_used);
+	debug("connection setup (sockets = %d)\n", conn.sd_list.size());
 
 	return 0;
 }
@@ -1037,14 +1036,14 @@ fs_connection_new(fs_conn &conn)
 
 	FD_ZERO(&sd_set);
 
-	for (n = 0; n < conn.sd_list_used; n++)
+	for (n = 0; n < conn.sd_list.size(); n++)
 		FD_SET(conn.sd_list[n], &sd_set);
 
 	select(conn.sd_max + 1, &sd_set, nullptr, nullptr, nullptr);
 
 	int sd = 0;
 
-	for (n = 0; n < conn.sd_list_used; n++) {
+	for (n = 0; n < conn.sd_list.size(); n++) {
 		if (FD_ISSET(conn.sd_list[n], &sd_set)) {
 			sd = accept(conn.sd_list[n], nullptr, nullptr);
 			break;
@@ -2037,9 +2036,6 @@ main(int argc, char **argv)
 	fs_conn.listen_unix = true;
 	fs_conn.listen_inet = true;
 	fs_conn.port = default_port;
-	fs_conn.sd_list_size = 16;
-	fs_conn.sd_list_used = 0;
-	fs_conn.sd_list = new int [fs_conn.sd_list_size];
 
 	for (int i = 1; i < argc; ++i) {
 		if (!strcmp(argv[i], "--gslist")) {
