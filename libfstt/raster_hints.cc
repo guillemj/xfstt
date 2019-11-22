@@ -37,7 +37,8 @@ Rasterizer::initInterpreter()
 
 	nPoints[0] = ttFont->maxpTable->maxTwilightPoints;
 	if (sizePoints[0] < nPoints[0]) {
-		if (sizePoints[0]) delete[] p[0];
+		if (sizePoints[0])
+			delete[] p[0];
 		sizePoints[0] = MEMSLACK * nPoints[0];
 		p[0] = new Point[sizePoints[0]];
 	}
@@ -47,25 +48,29 @@ Rasterizer::initInterpreter()
 		p[0][i] = nullpoint;
 
 	if (sizeStack < ttFont->maxpTable->maxStackSize) {
-		if (sizeStack) delete[] stackbase;
+		if (sizeStack)
+			delete[] stackbase;
 		sizeStack = MEMSLACK * ttFont->maxpTable->maxStackSize;
 		stackbase = stack = new int[sizeStack];
 	}
 
 	if (ttFont->cvtTable && sizeCvt < ttFont->cvtTable->numVals()) {
-		if (sizeCvt) delete[] cvt;
+		if (sizeCvt)
+			delete[] cvt;
 		sizeCvt	= MEMSLACK * ttFont->cvtTable->numVals();
 		cvt = new int[sizeCvt];
 	}
 
 	if (sizeStor < ttFont->maxpTable->maxStorage) {
-		if (sizeStor) delete[] stor;
+		if (sizeStor)
+			delete[] stor;
 		sizeStor = MEMSLACK * ttFont->maxpTable->maxStorage;
 		stor = new int[sizeStor];
 	}
 
 	if (sizeFDefs < ttFont->maxpTable->maxFunctionDefs) {
-		if (sizeFDefs) delete[] fdefs;
+		if (sizeFDefs)
+			delete[] fdefs;
 		sizeFDefs = MEMSLACK * ttFont->maxpTable->maxFunctionDefs;
 		fdefs = new FDefs[sizeFDefs];
 	}
@@ -93,16 +98,24 @@ Rasterizer::initInterpreter()
 void
 Rasterizer::endInterpreter()
 {
-	if (sizeIDefs)		delete[] idefs;
-	if (sizeFDefs)		delete[] fdefs;
-	if (sizeStor)		delete[] stor;
-	if (sizeCvt)		delete[] cvt;
-	if (sizeStack)		delete[] stackbase;
+	if (sizeIDefs)
+		delete[] idefs;
+	if (sizeFDefs)
+		delete[] fdefs;
+	if (sizeStor)
+		delete[] stor;
+	if (sizeCvt)
+		delete[] cvt;
+	if (sizeStack)
+		delete[] stackbase;
 /*
-	if (sizeContours)	delete[] endPoints;
-	if (sizePoints[1])	delete[] p[1];
+	if (sizeContours)
+		delete[] endPoints;
+	if (sizePoints[1])
+		delete[] p[1];
 */
-	if (sizePoints[0])	delete[] p[0];
+	if (sizePoints[0])
+		delete[] p[0];
 }
 
 void
@@ -205,7 +218,8 @@ Rasterizer::round(int x) const
 		debug("\tsround45(%d) = %d\t", x, (x<0)?-y:+y);
 		break;
 	}
-	if (y < 0) return 0;
+	if (y < 0)
+		return 0;
 	return (x >= 0) ? +y : -y;
 }
 
@@ -315,7 +329,8 @@ void
 GraphicsState::recalc()
 {
 	flags = f_vec_x ? X_TOUCHED : 0;
-	if (f_vec_y) flags |= Y_TOUCHED;
+	if (f_vec_y)
+		flags |= Y_TOUCHED;
 
 	int fp_cross = absNewMeasure(f_vec_x, f_vec_y);
 	if (fp_cross) {
@@ -623,8 +638,10 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		n = (m >> 6) & 3;
 		gs.round_period = 0x20 << n;
 		n = (m >> 4) & 3;
-		if (n == 3) gs.round_phase = 48;
-		else gs.round_phase = (gs.round_period >> 2) * n;
+		if (n == 3)
+			gs.round_phase = 48;
+		else
+			gs.round_phase = (gs.round_period >> 2) * n;
 		m &= 0x0F;
 		if (m)
 			gs.round_thold = (gs.round_period >> 3) * (m - 4);
@@ -666,12 +683,18 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 	case SCANCTRL:
 		m = *(stack--);
 		gs.dropout_control = 0;
-		if (m & 0x0100 && mppem <= (m & 0xff))	gs.dropout_control = 1;
-		if (m & 0x0200 && !xy && !yx)		gs.dropout_control = 1;
-		if (m & 0x0400 && xx != yy)		gs.dropout_control = 1;
-		if (m & 0x0800 && mppem > (m & 0xff))	gs.dropout_control = 0;
-		if (m & 0x1000 && (xy || yx))		gs.dropout_control = 0;
-		if (m & 0x2000 && xx == yy)		gs.dropout_control = 0;
+		if (m & 0x0100 && mppem <= (m & 0xff))
+			gs.dropout_control = 1;
+		if (m & 0x0200 && !xy && !yx)
+			gs.dropout_control = 1;
+		if (m & 0x0400 && xx != yy)
+			gs.dropout_control = 1;
+		if (m & 0x0800 && mppem > (m & 0xff))
+			gs.dropout_control = 0;
+		if (m & 0x1000 && (xy || yx))
+			gs.dropout_control = 0;
+		if (m & 0x2000 && xx == yy)
+			gs.dropout_control = 0;
 		debug("SCANCTRL %04X -> %d", m, gs.dropout_control);
 		break;
 	case SCANTYPE:
@@ -834,7 +857,8 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		n = gs.absNewMeasure(pp->xnow - pp->xold, pp->ynow - pp->yold);
 		assert(m >= 0 && m <= 1);
 		for (Point *pp1 = p[m], *pp2 = pp1 + nPoints[m]; pp1 < pp2; ++pp1) {
-			if (pp1 == pp) continue;
+			if (pp1 == pp)
+				continue;
 			debug("\nSHZ p[%zd] by %f", pp1 - p[m], n / FSHIFT);
 			debug("\t(%d %d) -> ", pp1->xnow, pp1->ynow);
 			pp1->xnow += (n * gs.move_x) >> 14;
@@ -1203,7 +1227,8 @@ deltac_label:
 				break;
 			if (n == (arg & 0xf0)) {
 				arg = (arg & 15) - 8;
-				if (arg >= 0) ++arg;
+				if (arg >= 0)
+					++arg;
 				arg <<= SHIFT - gs.delta_shift;
 				debug("\tmoved by %f,\t%d ",
 				      arg / FSHIFT, cvt[cno]);
@@ -1403,7 +1428,8 @@ jump_relative:
 		break;
 	case ABS:
 		m = *stack;
-		if (m < 0) *stack = -m;
+		if (m < 0)
+			*stack = -m;
 		debug("ABS %d = %d", m, *stack);
 		break;
 	case NEG:

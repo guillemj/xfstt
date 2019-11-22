@@ -236,8 +236,11 @@ Rasterizer::getFontExtent(FontExtent *fe)
 		ci->offset = buffer - fe->bitmaps;
 		buffer += ci->length;
 
-#define MINMAX(x,y,z)	if (z < fe->x) fe->x = z;	\
-			if (z > fe->y) fe->y = z;
+#define MINMAX(x, y, z) \
+	if (z < fe->x) \
+		fe->x = z; \
+	if (z > fe->y) \
+		fe->y = z;
 
 		MINMAX(xBlackboxMin, xBlackboxMax, gm->xBlackbox);
 		MINMAX(yBlackboxMin, yBlackboxMax, gm->yBlackbox);

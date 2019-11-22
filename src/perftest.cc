@@ -56,7 +56,8 @@ ttPerfDir(Rasterizer *raster, int pt, FontExtent *fe, const char *ttdir)
 		string filename(de->d_name);
 		int namelen = filename.size();
 
-		if (namelen - 4 <= 0) continue;
+		if (namelen - 4 <= 0)
+			continue;
 
 		string ext = string(filename, namelen - 4, namelen);
 
