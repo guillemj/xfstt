@@ -1082,9 +1082,9 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		debug("and p[%zd]-p[%zd] ", pp3 - gs.zp0, pp4 - gs.zp0);
 
 		int f1 = (pp1->xnow - pp3->xnow) * (pp4->ynow - pp3->ynow) -
-			 (pp1->ynow - pp3->ynow) * (pp4->xnow - pp3->xnow);
+		         (pp1->ynow - pp3->ynow) * (pp4->xnow - pp3->xnow);
 		int f2 = (pp2->ynow - pp1->ynow) * (pp4->xnow - pp3->xnow) -
-			 (pp2->xnow - pp1->xnow) * (pp4->ynow - pp3->ynow);
+		         (pp2->xnow - pp1->xnow) * (pp4->ynow - pp3->ynow);
 
 		pp3 = &gs.zp2[m];
 		pp3->flags |= X_TOUCHED | Y_TOUCHED;
@@ -1094,9 +1094,9 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 			debug("are parallel!\n");
 		} else {
 			pp3->xnow = pp1->xnow +
-				    MULDIV(f1, pp2->xnow - pp1->xnow, f2);
+			            MULDIV(f1, pp2->xnow - pp1->xnow, f2);
 			pp3->ynow = pp1->ynow +
-				    MULDIV(f1, pp2->ynow - pp1->ynow, f2);
+			            MULDIV(f1, pp2->ynow - pp1->ynow, f2);
 		}
 
 		debug("\n-> %d %d", pp3->xnow, pp3->ynow);
@@ -1162,6 +1162,7 @@ deltap_label:
 		while (--m >= 0) {
 			int pno = *(stack--);
 			int arg = *(stack--);
+
 			debug("\np[%d] arg %04X", pno, arg);
 			debug("\targ.n=%d, n=%d", arg >> 4, n >> 4);
 			if (n > (arg & 0xf0))
@@ -1644,7 +1645,7 @@ Rasterizer::interpolate(Point &pp, const Point &p2, const Point &p1)
 	if ((dold21 ^ doldp1) < 0 || doldp1 == 0)
 		dist = newMeasure(p1, pp) + doldp1; //- oldMeasure(p1, pp);
 	else if ((dold21 >= 0 && doldp1 >= dold21) ||
-		 (dold21 <= 0 && doldp1 <= dold21))
+	         (dold21 <= 0 && doldp1 <= dold21))
 		dist = newMeasure(p2, pp) - oldMeasure(p2, pp);
 	else {
 		int dnew21 = newMeasure(p2, p1);

@@ -341,7 +341,7 @@ ttSyncAll(bool gslist = false)
 		chdir(fontdir);
 		if (de->d_name[0] != '.' && !chdir(de->d_name))
 			nfonts += ttSyncDir(infoFile, nameFile,
-					    de->d_name, gslist);
+			                    de->d_name, gslist);
 	}
 	closedir(dirp);
 
@@ -452,10 +452,10 @@ listTTFNFonts(char *pattern, int index, char *buf)
 	/* Pre-allocate the buffer so that the terminating '\0' fits. */
 	char panose[sizeof(fn.panose) + 1];
 	sprintf(panose, "%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X",
-		ttfn->bFamilyType, ttfn->bSerifStyle, ttfn->bWeight,
-		ttfn->bProportion, ttfn->bContrast, ttfn->bStrokeVariation,
-		ttfn->bArmStyle, ttfn->bLetterForm, ttfn->bMidLine,
-		ttfn->bXHeight);
+	        ttfn->bFamilyType, ttfn->bSerifStyle, ttfn->bWeight,
+	        ttfn->bProportion, ttfn->bContrast, ttfn->bStrokeVariation,
+	        ttfn->bArmStyle, ttfn->bLetterForm, ttfn->bMidLine,
+	        ttfn->bXHeight);
 	/* Copy only the text, not the terminating '\0'. */
 	memcpy(&fn.panose[0][0], panose, sizeof(fn.panose));
 
@@ -502,7 +502,7 @@ fs_find_font(Font fid, fs_client &client)
 
 static XFSFont *
 openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
-	 int fid, Encoding *encoding)
+         int fid, Encoding *encoding)
 {
 	debug("point %d, pixel %d, res %d\n",
 	      fp->point[0], fp->pixel[0], fp->resolution[0]);
@@ -693,7 +693,7 @@ openTTFN(Rasterizer *raster, char *ttfnName, FontParams *fp, int fid)
 		if (!strcmp(name, ttfnName)) {
 			chdir(fontdir);
 			return openFont(new TTFont(file), fp, raster, fid,
-					encodings[0]);
+			                encodings[0]);
 		}
 	}
 	return nullptr;
@@ -766,7 +766,7 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 		if (*p == 0 && *xlfd == 0) {
 			chdir(fontdir);
 			return openFont(new TTFont(file), fp, raster, fid,
-					encoding);
+			                encoding);
 		}
 	}
 

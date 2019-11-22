@@ -108,7 +108,7 @@ GlyphTable::getGlyphData(int glyphNo, LocaTable *locaTable, Rasterizer *raster)
 	(pp - 1)->flags |= END_SUBGLYPH;
 
 	raster->putGlyphData(nEndPoints, nPoints, endPoints, points,
-			     glyphNo, xmin);
+	                     glyphNo, xmin);
 	raster->scaleGlyph();
 	raster->hintGlyph(this, codeOffset, codeLength);;
 
@@ -180,11 +180,11 @@ GlyphTable::getCompositeGlyphData(int glyphNo, LocaTable *locaTable,
 		if (xxscale != 0x2000)
 			for (int i = nPoints; --i >= 0;)
 				points[i].xnow = (xxscale * points[i].xnow)
-						 >> 14;
+				                 >> 14;
 		if (yyscale != 0x2000)
 			for (int i = nPoints; --i >= 0;)
 				points[i].ynow = (yyscale * points[i].ynow)
-						 >> 14;
+				                 >> 14;
 		if (xyscale | yxscale)
 			for (int i = nPoints; --i >= 0;) {
 				int xnow = points[i].xnow;
@@ -219,7 +219,7 @@ GlyphTable::getCompositeGlyphData(int glyphNo, LocaTable *locaTable,
 		codeOffset = tell();
 		seekRelative(codeLength);
 		debug("Composite Hints: ofs %05X, len %d\n",
-			 codeOffset, codeLength);
+		      codeOffset, codeLength);
 	} else
 		codeLength = 0;
 
@@ -227,13 +227,13 @@ GlyphTable::getCompositeGlyphData(int glyphNo, LocaTable *locaTable,
 	points -= nPoints = sumPoints;
 
 	raster->putGlyphData(nEndPoints, nPoints, endPoints, points, glyphNo,
-			     xmin);
+	                     xmin);
 
 	if (myMetricsAdv) {
 		debug("Composite Hinting\n");
 		points[nPoints].xold = points[nPoints].xnow = myMetricsLsb;
 		points[nPoints + 1].xold = points[nPoints + 1].xnow
-					 = myMetricsAdv;
+		                         = myMetricsAdv;
 	}
 
 	raster->hintGlyph(this, codeOffset, codeLength);

@@ -194,16 +194,16 @@ enum {
 };
 
 struct Point {
-	int	xnow, ynow;
-	int	xold, yold;
-	int	flags;
+	int xnow, ynow;
+	int xold, yold;
+	int flags;
 };
 
 struct FontInfo {
 	uint16_t firstChar, lastChar;
 	uint8_t panose[10];
 	size_t faceLength;
-	char	faceName[32];
+	char faceName[32];
 };
 
 // Table of Tables
@@ -294,8 +294,8 @@ public:
 };
 
 class NameTable: public RandomAccessFile {
-	int	strBase;
-	int	nRecords;
+	int strBase;
+	int nRecords;
 
 public:
 	NameTable(RandomAccessFile &f, int offset, int length);
@@ -408,8 +408,8 @@ public:
 
 // Glyph number to glyph data offset mapping
 class LocaTable: public RandomAccessFile {
-	int	maxGlyph;
-	int	isShort;
+	int maxGlyph;
+	int isShort;
 
 public:
 	LocaTable(RandomAccessFile &f, int offset, int length);
@@ -682,7 +682,7 @@ public:
 
 // Kern kerning table
 class KernTable: public RandomAccessFile {
-	int	kernOffset;
+	int kernOffset;
 	uint16_t nPairs;
 	uint16_t kernLength;
 	uint16_t coverage;

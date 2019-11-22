@@ -23,9 +23,9 @@
 #include <climits>
 
 Rasterizer::Rasterizer(int _grid_fitting, int _anti_aliasing,
-		       int _sizeTwilight, int _sizePoints, int _sizeContours,
-		       int _sizeStack, int _sizeCvt, int _sizeStor,
-		       int _sizeFDefs):
+                       int _sizeTwilight, int _sizePoints, int _sizeContours,
+                       int _sizeStack, int _sizeCvt, int _sizeStor,
+                       int _sizeFDefs):
 	stackbase(nullptr), ttFont(nullptr), status(INVALID_FONT),
 	sizeContours(_sizeContours), sizeStack(_sizeStack), sizeCvt(_sizeCvt),
 	sizeStor(_sizeStor), sizeFDefs(_sizeFDefs), sizeIDefs(0),
@@ -384,7 +384,7 @@ Rasterizer::putGlyphBitmap(int glyphNo, uint8_t *bmp, uint8_t *endbmp,
 
 void
 Rasterizer::putGlyphData(int ne, int np, int *ep, Point *pp, int glyphNo,
-		         int xmin)
+                         int xmin)
 {
 	nEndPoints = ne;
 	nPoints[1] = np;
@@ -461,5 +461,5 @@ Rasterizer::printOutline(void)
 			++j;
 			debug("----\n");
 		}
-	 }
+	}
 }

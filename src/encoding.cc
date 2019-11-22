@@ -91,9 +91,9 @@ Encoding::find(string mapname)
 			return m;
 		}
 		if (m == last) {
-			// FIXME: list is broken. Should NOT be circular. 
+			// FIXME: list is broken. Should NOT be circular.
 			//        however for some reason it is. Must figure
-                        //        out why - sjc 1999-10-16
+			//        out why - sjc 1999-10-16
 			return nullptr;
 		}
 	}

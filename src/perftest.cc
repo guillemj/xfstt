@@ -40,7 +40,7 @@
 #include "ttfn.h"
 
 #ifndef MAGNIFY
-	int MAGNIFY = 0;
+int MAGNIFY = 0;
 #endif /* MAGNIFY */
 
 static int numGlyphs = 0;
