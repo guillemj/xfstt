@@ -1151,8 +1151,10 @@ fixup_bitmap(FontExtent *fe, uint32_t hint)
 
 	if ((fe->bmpFormat ^ hint) & BitmapFormatMaskBit) {
 		debug("bitswap\n");
-		uint8_t map[16] = {0, 8, 4, 12, 2, 10, 6, 14,
-			      1, 9, 5, 13, 3, 11, 7, 15};
+		uint8_t map[16] = {
+			0, 8, 4, 12, 2, 10, 6, 14,
+			1, 9, 5, 13, 3, 11, 7, 15,
+		};
 		for (p = fe->bitmaps; p < end; ++p)
 			*p = (map[*p & 15] << 4) | map[(*p >> 4) & 15];
 	}
