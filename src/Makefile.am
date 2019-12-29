@@ -12,14 +12,27 @@ pidfile = $(localstatedir)/run/xfstt.pid
 
 LDADD = @LIBINTL@ -L$(top_builddir)/libfstt -lfstt
 
-AM_CPPFLAGS = -DLOCALEDIR=\""$(localedir)\"" -DFONTDIR=\""$(fontdir)\"" \
-	      -DCACHEDIR=\""$(cachedir)\"" -DPIDFILE=\""$(pidfile)\"" \
-	      -DMAGNIFY=0 -I$(top_srcdir)/libfstt
+AM_CPPFLAGS = \
+	-DLOCALEDIR=\""$(localedir)\"" \
+	-DFONTDIR=\""$(fontdir)\"" \
+	-DCACHEDIR=\""$(cachedir)\"" \
+	-DPIDFILE=\""$(pidfile)\"" \
+	-DMAGNIFY=0 \
+	-I$(top_srcdir)/libfstt \
+	$(nil)
 
 bin_PROGRAMS = xfstt
 noinst_PROGRAMS = patchttf perftest
 
-xfstt_SOURCES = xfstt.cc xfstt.h ttfn.h encoding.cc encoding.h mesg.h gettext.h
+xfstt_SOURCES = \
+	xfstt.cc \
+	xfstt.h \
+	ttfn.h \
+	encoding.cc \
+	encoding.h \
+	mesg.h \
+	gettext.h \
+	$(nil)
 xfstt_CXXFLAGS = $(FONTSPROTO_CFLAGS)
 
 patchttf_SOURCES = patchttf.cc gettext.h
