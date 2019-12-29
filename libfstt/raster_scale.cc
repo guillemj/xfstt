@@ -50,7 +50,7 @@ Rasterizer::~Rasterizer()
 
 // useTTFont must be executed before setP*Size!
 void
-Rasterizer::useTTFont(TTFont* _ttFont, int _flags)
+Rasterizer::useTTFont(TTFont *_ttFont, int _flags)
 {
 	flags = _flags;
 
