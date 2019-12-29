@@ -381,8 +381,8 @@ listXLFDFonts(char *pattern0, int index, char *buf)
 	char proportion = (ttfn->bProportion == 9) ? 'm' : 'p';
 
 	char *buf0 = buf++;
-	if (pattern[0] == '*'
-	    || (pattern[0] == '-' && pattern[1] == '*' && pattern[2] == 0)) {
+	if (pattern[0] == '*' ||
+	    (pattern[0] == '-' && pattern[1] == '*' && pattern[2] == 0)) {
 		char xlfdExt[] = "0-0-0-0-p-0-iso8859-1";
 		xlfdExt[8] = proportion;
 		strcpy(buf, xlfdName);
@@ -812,8 +812,8 @@ openTTFdb()
 		return 0;
 	}
 
-	if (infoSize <= sizeof(TTFNheader)
-	    || strncmp(infoBase, "TTFNINFO", 8)) {
+	if (infoSize <= sizeof(TTFNheader) ||
+	    strncmp(infoBase, "TTFNINFO", 8)) {
 		error(_("corrupt font database!\n"));
 		return 0;
 	}
@@ -847,8 +847,8 @@ openTTFdb()
 		return 0;
 	}
 
-	if (nameSize <= sizeof(TTFNheader)
-	    || strncmp(nameBase, "TTFNNAME", 8)) {
+	if (nameSize <= sizeof(TTFNheader) ||
+	    strncmp(nameBase, "TTFNNAME", 8)) {
 		error(_("corrupt font database!\n"));
 		return 0;
 	}
