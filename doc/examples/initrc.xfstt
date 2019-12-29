@@ -24,29 +24,26 @@ ARGS="--port $portno $daemon --user $newuser"
 test -x "$XFSTT" || exit 0
 
 case "$1" in
-    start)
-	    echo -n "Starting X TrueType Font Server: xfstt"
-	    $XFSTT $ARGS &
-	    echo "."
-    ;;
-
-    stop)
-	    echo -n "Stopping X TrueType Font Server: xfstt"
-	    kill `cat $PIDFILE` || echo -n " not running"
-	    echo "."
-    ;;
-
-    restart)
-	    echo -n "Reloading X True Type Font Server configuration..."
-	    $0 stop
-	    $XFSTT --sync
-	    $0 start
-    ;;
-
-    *)
-	echo "Usage: /etc/init.d/xfstt {start|stop|restart}" >&2
-	exit 1
-    ;;
+start)
+  echo -n "Starting X TrueType Font Server: xfstt"
+  $XFSTT $ARGS &
+  echo "."
+  ;;
+stop)
+  echo -n "Stopping X TrueType Font Server: xfstt"
+  kill $(cat $PIDFILE) || echo -n " not running"
+  echo "."
+  ;;
+restart)
+  echo -n "Reloading X True Type Font Server configuration..."
+  $0 stop
+  $XFSTT --sync
+  $0 start
+  ;;
+*)
+  echo "Usage: /etc/init.d/xfstt {start|stop|restart}" >&2
+  exit 1
+  ;;
 esac
 
 exit 0
