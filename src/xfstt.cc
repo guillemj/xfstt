@@ -369,8 +369,9 @@ listXLFDFonts(char *pattern0, int index, char *buf)
 	if (index == 0) {
 		ttfn = (TTFNdata *)(infoBase + sizeof(TTFNheader));
 		mapIndex = 0;
-	} else if (mapIndex == 0 && (char *)++ttfn >= infoBase + infoSize)
+	} else if (mapIndex == 0 && (char *)++ttfn >= infoBase + infoSize) {
 		return -1;
+	}
 
 	char *pattern = pattern0;
 
@@ -423,8 +424,9 @@ listXLFDFonts(char *pattern0, int index, char *buf)
 		buf += encodings[mapIndex]->Name.size() - 3;
 		if (!encodings[++mapIndex])
 			mapIndex = 0;
-	} else
+	} else {
 		mapIndex = 0;
+	}
 
 	debug("match\t\"%s\"\n", buf0 + 1);
 
@@ -442,8 +444,9 @@ listTTFNFonts(char *pattern, int index, char *buf)
 
 	if (index == 0 || ttfn == nullptr) {
 		ttfn = (TTFNdata *)(infoBase + sizeof(TTFNheader));
-	} else if ((char *)++ttfn >= infoBase + infoSize)
+	} else if ((char *)++ttfn >= infoBase + infoSize) {
 		return -1;
+	}
 
 	char *fontName = nameBase + ttfn->nameOfs;
 

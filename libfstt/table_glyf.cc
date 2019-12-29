@@ -220,8 +220,9 @@ GlyphTable::getCompositeGlyphData(int glyphNo, LocaTable *locaTable,
 		seekRelative(codeLength);
 		debug("Composite Hints: ofs %05X, len %d\n",
 		      codeOffset, codeLength);
-	} else
+	} else {
 		codeLength = 0;
+	}
 
 	endPoints -= nEndPoints = sumEndpoints;
 	points -= nPoints = sumPoints;
