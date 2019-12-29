@@ -8,7 +8,7 @@ xfstt \- X11 Font Server for TrueType fonts
 .RI [ options ]
 .
 .SH DESCRIPTION
-Xfstt serves TrueType fonts to X11 servers. Start xfstt then tell X11 about
+xfstt serves TrueType fonts to X11 servers. Start xfstt then tell X11 about
 the font server with
 .B "xset fp+ unix/:7101"
 or (assuming the X11 server runs on host 127.0.0.1)
