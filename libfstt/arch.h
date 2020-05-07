@@ -66,8 +66,10 @@ inline int muldiv(int a, int b, int c)
 {
 	int r;
 	// 32Bit * 32Bit / 32Bit with intermediate 64Bit divisor
-	__asm__("imull %2\n\tidiv %3, %0" :
-		"=a"(r) : "0"(a), "d"(b), "g"(c));
+	__asm__("imull %2\n"
+	        "idiv %3, %0\n"
+	        : "=a"(r)
+	        : "0"(a), "d"(b), "g"(c));
 	return r;
 }
 #endif
