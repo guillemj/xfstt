@@ -64,12 +64,13 @@
 #  define MULDIV muldiv
 inline int muldiv(int a, int b, int c)
 {
-	int r;
+	int r, d;
+
 	// 32Bit * 32Bit / 32Bit with intermediate 64Bit divisor
 	__asm__("imull %2\n"
-	        "idivl %3\n"
-	        : "=a"(r)
-	        : "0"(a), "d"(b), "rm"(c));
+	        "idivl %4\n"
+	        : "=a"(r), "=d" (d)
+	        : "0"(a), "1"(b), "rm"(c));
 
 	return r;
 }
