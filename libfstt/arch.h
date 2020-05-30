@@ -69,7 +69,8 @@ inline int muldiv(int a, int b, int c)
 	__asm__("imull %2\n"
 	        "idivl %3\n"
 	        : "=a"(r)
-	        : "0"(a), "d"(b), "g"(c));
+	        : "0"(a), "d"(b), "rm"(c));
+
 	return r;
 }
 #endif
