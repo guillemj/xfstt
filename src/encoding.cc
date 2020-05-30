@@ -74,6 +74,7 @@ string_token(string str, string sep, size_t &pos)
 	size_t n = str.find_first_of(sep, pos);
 
 	if (n == string::npos) {
+		ret = string(str, pos);
 		pos = n;
 	} else {
 		ret = string(str, pos, n - pos);
