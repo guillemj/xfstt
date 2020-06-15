@@ -25,7 +25,6 @@ Documentation:
 
 Code cleanup:
  - search for XXX and correct.
- ? move all contrib references in src to THANKS file (code cleanup).
 
 License:
  ? change license in sources at src/ to GPL, need consent of Herbert,

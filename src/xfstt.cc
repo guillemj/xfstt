@@ -380,7 +380,7 @@ listXLFDFonts(char *pattern0, int index, char *buf)
 	char proportion = (ttfn->bProportion == 9) ? 'm' : 'p';
 
 	char *buf0 = buf++;
-	if (pattern[0] == '*' // Thanks CK
+	if (pattern[0] == '*'
 	    || (pattern[0] == '-' && pattern[1] == '*' && pattern[2] == 0)) {
 		char xlfdExt[] = "0-0-0-0-p-0-iso8859-1";
 		xlfdExt[8] = proportion;
@@ -417,7 +417,7 @@ listXLFDFonts(char *pattern0, int index, char *buf)
 	}
 
 	*buf = 0;
-	// XXX: this hack satisfies Mozilla, thanks Andrew Turner
+	// XXX: This hack satisfies Mozilla.
 	if (!strcmp(buf - 4, "-0-0")) {
 		strcpy(buf - 3, encodings[mapIndex]->Name.c_str());
 		buf += encodings[mapIndex]->Name.size() - 3;
@@ -1722,7 +1722,6 @@ fs_query_x_extents(fs_client &client)
 		ext->descent = gm->yOrigin;
 		ext->attributes = gm->yAdvance;
 
-		// Thanks GB
 		if (!glyphNo && ch != xfs->fi.firstChar) {
 			ext->left = ext->right = 0;
 			ext->ascent = ext->descent = 0;
@@ -2079,7 +2078,7 @@ main(int argc, char **argv)
 		} else if (!strcmp(argv[i], "--version")) {
 			version();
 			return 0;
-		} else if (!strcmp(argv[i], "--inetd")) { // thanks Feanor
+		} else if (!strcmp(argv[i], "--inetd")) {
 			inetdConnection = true;
 			multiConnection = false;
 		} else if (!strcmp(argv[i], "--once")) {
@@ -2181,8 +2180,7 @@ main(int argc, char **argv)
 
 				return 0;
 			} else if (multiConnection) {
-				// Redundant on most systems
-				// Needed for BSD Thanks David Lowe
+				// Redundant on most systems, needed for BSD.
 				int status;
 
 				waitpid(-1, &status, WNOHANG);

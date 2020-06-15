@@ -777,7 +777,7 @@ Rasterizer::execOpcode(RandomAccessFile* const f)
 		n = *stack;
 		debug("MD1 p[%d][%d] ", gs.zp1 == p[1], m);
 		debug("- p[%d][%d]", gs.zp0 == p[1], n);
-		*stack = oldMeasure(gs.zp0[n], gs.zp1[m]); // Thanks David
+		*stack = oldMeasure(gs.zp0[n], gs.zp1[m]);
 		break;
 	case MPPEM:
 		debug("MPPEM\t");
@@ -1548,7 +1548,7 @@ jump_relative:
 			debug("IDEF_CALL 0x%02X, ofs = %05X, len = %d\n",
 			      opc, idef->offset, idef->length);
 
-			if (idef->length) // Thanks Colin McCormack
+			if (idef->length)
 				execHints(idef->f, idef->offset, idef->length);
 			else
 				debug("illegal instruction %02X\n", opc);

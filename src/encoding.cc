@@ -322,7 +322,7 @@ iso8859_8::map2unicode(int code)
 		return 0x203e;
 	if (code == 0xdf)
 		return 0x2017;
-	return (code + 0x4f0);	// Thanks Stanislav Malyshev
+	return (code + 0x4f0);
 }
 
 class iso8859_9: public Encoding
@@ -358,7 +358,6 @@ iso8859_9::map2unicode(int code)
 	return code;
 }
 
-// Thanks Atsawin Chowanakritsanakul
 // Latin/Thai aka TIS-620
 class iso8859_11: public Encoding
 {
@@ -390,7 +389,6 @@ iso8859_11::map2unicode(int code)
 	return table[code - 160];
 }
 
-// Thanks Andrew Wheatley
 class iso8859_14: public Encoding
 {
 public:
@@ -425,7 +423,6 @@ iso8859_14::map2unicode(int code)
 	return table[code - 0xa0];
 }
 
-// Thanks David Woodhouse
 class iso8859_15: public Encoding
 {
 public:
@@ -459,7 +456,6 @@ iso8859_15::map2unicode(int code)
 	return code;
 }
 
-// Thanks Vladimir Eltsov and Nikolay Grygoryev
 class koi8_r: public Encoding
 {
 public:
@@ -496,7 +492,6 @@ koi8_r::map2unicode(int code)
 	return table[code - 128];
 }
 
-// Thanks Vitaly V. Bursov
 class koi8_u: public Encoding
 {
 public:
@@ -567,7 +562,6 @@ windows_1251::map2unicode(int code)
 	return table[code - 128];
 }
 
-// Thanks Petr Tomasek
 class iso8859_10: public Encoding
 {
 public:
@@ -1624,7 +1618,6 @@ atari_st::map2unicode(int code)
 	return table[code - 128];
 }
 
-// Thanks Gilbert Baumann
 // Used to be unicode-2 - now known as iso10646-1
 class iso10646_1: public Encoding
 {
@@ -1633,7 +1626,6 @@ public:
 	int map2unicode(int code) { return code; }
 } exemplar_iso10646_1;
 
-// Thanks Mindaugas Riauba
 class windows_1257: public Encoding
 {
 public:
@@ -1670,7 +1662,6 @@ windows_1257::map2unicode(int code)
 	return table[code - 128];
 }
 
-// Thanks Ove Kaaven  **added 4/14/1999 for v0.9.99 **
 class windows_sami2: public Encoding
 {
 public:
