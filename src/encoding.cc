@@ -26,6 +26,35 @@
 Encoding *Encoding::first = nullptr;
 Encoding *Encoding::last = nullptr;
 
+// Search the list of encodings for an encoding with the given name.
+Encoding *
+Encoding::find(string mapname)
+{
+	Encoding *m;
+
+	for (m = first; m; m = m->next) {
+		if (mapname == m->Name) {
+			return m;
+		}
+		if (m == last) {
+			// FIXME: list is broken. Should NOT be circular.
+			//        however for some reason it is. Must figure
+			//        out why - sjc 1999-10-16
+			return nullptr;
+		}
+	}
+	return nullptr;
+}
+
+Encoding *
+Encoding::enumerate(Encoding *iterator)
+{
+	if (iterator == last) {
+		return nullptr; // FIXME: see find function FIXME
+	}
+	return iterator ? iterator->next : first;
+}
+
 Encoding::Encoding(const string mapname):
 	Name(mapname)
 {
@@ -71,35 +100,6 @@ Encoding::parse(string mapnames, Encoding **maps0, int maxcodes)
 	} while (pos != string::npos && maps - maps0 < maxcodes);
 
 	return (maps - maps0);
-}
-
-// Search the list of encodings for an encoding with the given name.
-Encoding *
-Encoding::find(string mapname)
-{
-	Encoding *m;
-
-	for (m = first; m; m = m->next) {
-		if (mapname == m->Name) {
-			return m;
-		}
-		if (m == last) {
-			// FIXME: list is broken. Should NOT be circular.
-			//        however for some reason it is. Must figure
-			//        out why - sjc 1999-10-16
-			return nullptr;
-		}
-	}
-	return nullptr;
-}
-
-Encoding *
-Encoding::enumerate(Encoding *iterator)
-{
-	if (iterator == last) {
-		return nullptr; // FIXME: see find function FIXME
-	}
-	return iterator ? iterator->next : first;
 }
 
 // Map box drawing gliphs to 0x00 .. 0x1f for curses based program
