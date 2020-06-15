@@ -2067,16 +2067,15 @@ main(int argc, char **argv)
 			cachedir = argv[++i];
 		} else if (!strcmp(argv[i], "--encoding")) {
 			char *maplist = argv[++i];
-			if (!Encoding::parse(maplist, encodings, MAXENC)) {
-				error(_("illegal encoding!\n"));
-				info(_("valid encodings are:\n"));
-				for (Encoding *maps = nullptr;;) {
-					maps = Encoding::enumerate(maps);
-					if (!maps)
-						exit(0);
-					info("\t%s\n", maps->Name.c_str());
-				}
+			if (Encoding::parse(maplist, encodings, MAXENC) > 0)
+				continue;
+
+			error(_("illegal encoding!\n"));
+			info(_("valid encodings are:\n"));
+			for (Encoding *maps = nullptr; maps = Encoding::enumerate(maps); ) {
+				info("\t%s\n", maps->Name.c_str());
 			}
+			exit(0);
 		} else if (!strcmp(argv[i], "--help")) {
 			usage(1);
 			return 0;
