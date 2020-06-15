@@ -23,6 +23,7 @@
 #define ENCODING_H
 
 #include <string>
+#include <vector>
 
 using std::string;
 
@@ -31,19 +32,41 @@ public:
 	virtual ~Encoding() {}
 	virtual int map2unicode(int code) = 0;
 	virtual int hasGlyphs(int /*unicodeRange*/[4]) { return 1; }
-	static void getDefault(Encoding **maps, int maxcodes);
-	static int parse(string mapnames, Encoding **maps, int maxcodes);
-	static Encoding *find(string mapname);
-	static Encoding *enumerate(Encoding *iterator);
 
 	const string Name;
 
 protected:
 	Encoding(const string name);
+};
+
+class EncodingsRegistry {
+public:
+	static void add(Encoding *encoding);
+	static Encoding *find(string mapname);
+	static std::vector<Encoding *> getDefault();
+
+	typedef std::vector<Encoding *>::iterator iterator;
+	static iterator begin();
+	static iterator end();
 
 private:
-	static Encoding *first, *last;
-	Encoding *next;
+	static std::vector<Encoding *> encodings;
+};
+
+class EncodingsActive {
+public:
+	EncodingsActive();
+
+	int parse(string mapnames);
+
+	Encoding *operator[](int idx);
+
+	typedef std::vector<Encoding *>::iterator iterator;
+	iterator begin();
+	iterator end();
+
+private:
+	std::vector<Encoding *> encodings;
 };
 
 #endif

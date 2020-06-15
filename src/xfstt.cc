@@ -133,8 +133,7 @@ static gid_t newgid = (gid_t)(-2);
 static const char *sockname;
 static const char *sockdir = "/tmp/.font-unix";
 
-#define MAXENC 16	/* Maximum number of encodings */
-static Encoding *encodings[MAXENC];
+static EncodingsActive encodings;
 
 static void
 version()
@@ -739,7 +738,7 @@ openXLFD(Rasterizer *raster, char *xlfdName, FontParams *fp, int fid)
 			case 13:
 				for (char *cp = p; *cp; ++cp)
 					*cp = tolower(*cp);
-				encoding = Encoding::find(++p);
+				encoding = EncodingsRegistry::find(++p);
 				break;
 			}
 	}
@@ -2032,8 +2031,6 @@ main(int argc, char **argv)
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
 
-	Encoding::getDefault(encodings, MAXENC);
-
 	fs_conn.listen_unix = true;
 	fs_conn.listen_inet = true;
 	fs_conn.port = default_port;
@@ -2067,13 +2064,14 @@ main(int argc, char **argv)
 			cachedir = argv[++i];
 		} else if (!strcmp(argv[i], "--encoding")) {
 			char *maplist = argv[++i];
-			if (Encoding::parse(maplist, encodings, MAXENC) > 0)
+			if (encodings.parse(maplist) > 0)
 				continue;
 
 			error(_("illegal encoding!\n"));
 			info(_("valid encodings are:\n"));
-			for (Encoding *maps = nullptr; maps = Encoding::enumerate(maps); ) {
-				info("\t%s\n", maps->Name.c_str());
+			EncodingsRegistry::iterator iter;
+			for (iter = EncodingsRegistry::begin(); iter != EncodingsRegistry::end(); ++iter) {
+				info("\t%s\n", (*iter)->Name.c_str());
 			}
 			exit(0);
 		} else if (!strcmp(argv[i], "--help")) {

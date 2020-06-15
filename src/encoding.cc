@@ -23,48 +23,39 @@
 #include "encoding.h"
 
 
-Encoding *Encoding::first = nullptr;
-Encoding *Encoding::last = nullptr;
+std::vector<Encoding *> EncodingsRegistry::encodings;
+
+void
+EncodingsRegistry::add(Encoding *encoding)
+{
+	encodings.push_back(encoding);
+}
 
 // Search the list of encodings for an encoding with the given name.
 Encoding *
-Encoding::find(string mapname)
+EncodingsRegistry::find(string mapname)
 {
-	Encoding *m;
+	iterator iter;
 
-	for (m = first; m; m = m->next) {
-		if (mapname == m->Name) {
-			return m;
-		}
-		if (m == last) {
-			// FIXME: list is broken. Should NOT be circular.
-			//        however for some reason it is. Must figure
-			//        out why - sjc 1999-10-16
-			return nullptr;
+	for (iter = encodings.begin(); iter != encodings.end(); ++iter) {
+		if (mapname == (*iter)->Name) {
+			return *iter;
 		}
 	}
+
 	return nullptr;
 }
 
-Encoding *
-Encoding::enumerate(Encoding *iterator)
+std::vector<Encoding *>::iterator
+EncodingsRegistry::begin()
 {
-	if (iterator == last) {
-		return nullptr; // FIXME: see find function FIXME
-	}
-	return iterator ? iterator->next : first;
+	return encodings.begin();
 }
 
-Encoding::Encoding(const string mapname):
-	Name(mapname)
+std::vector<Encoding *>::iterator
+EncodingsRegistry::end()
 {
-	if (!first)
-		first = this;
-	else
-		last->next = this;
-
-	last = this;
-	next = nullptr;
+	return encodings.end();
 }
 
 static string
@@ -85,22 +76,52 @@ string_token(string str, string sep, size_t &pos)
 }
 
 int
-Encoding::parse(string mapnames, Encoding **maps0, int maxcodes)
+EncodingsActive::parse(string mapnames)
 {
-	Encoding **maps = maps0;
-	Encoding *m;
 	string mapname;
 	size_t pos = 0;
+	size_t orig_size = encodings.size();
 
 	do {
 		mapname = string_token(mapnames, ", ", pos);
 
-		m = find(mapname);
+		Encoding *m = EncodingsRegistry::find(mapname);
 		if (m)
-			*(maps++) = m;
-	} while (pos != string::npos && maps - maps0 < maxcodes);
+			encodings.push_back(m);
+	} while (pos != string::npos);
 
-	return (maps - maps0);
+	return encodings.size() - orig_size;
+}
+
+Encoding *
+EncodingsActive::operator[](int idx)
+{
+	if (idx > encodings.size())
+		return encodings[0];
+
+	return encodings[idx];
+}
+
+std::vector<Encoding *>::iterator
+EncodingsActive::begin()
+{
+	return encodings.begin();
+}
+
+std::vector<Encoding *>::iterator
+EncodingsActive::end()
+{
+	return encodings.end();
+}
+
+//
+// Specific encodings
+//
+
+Encoding::Encoding(const string mapname):
+	Name(mapname)
+{
+	EncodingsRegistry::add(this);
 }
 
 // Map box drawing gliphs to 0x00 .. 0x1f for curses based program
@@ -1700,10 +1721,7 @@ windows_sami2::map2unicode(int code)
 	return table[code - 128];
 }
 
-void
-Encoding::getDefault(Encoding **maps, int maxcodes)
+EncodingsActive::EncodingsActive()
 {
-	maps[0] = &exemplar_iso8859_1;
-	if (maxcodes <= 1) return;
-	maps[1] = nullptr;
+	encodings.push_back(&exemplar_iso8859_1);
 }
