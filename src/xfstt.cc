@@ -929,6 +929,56 @@ fs_connection_setup_inet(fs_conn &conn, struct addrinfo *res)
 #endif
 
 static int
+fs_connection_mkdir()
+{
+	struct stat st;
+
+	if (lstat(sockdir, &st) < 0) {
+		if (errno != ENOENT) {
+			error(_("cannot get metadata for socket directory %s"),
+			      sockdir);
+			return -1;
+		}
+
+		if (geteuid() != 0) {
+			error(_("cannot create socket directory %s owned by root"),
+			      sockdir);
+			return -1;
+		}
+
+		if (mkdir(sockdir, 01777) < 0) {
+			error(_("cannot create socket directory %s"), sockdir);
+			return -1;
+		}
+	} else {
+		if (!S_ISDIR(st.st_mode)) {
+			error(_("pre-existing socket directory %s is not a directory"),
+			      sockdir);
+			return -1;
+		}
+
+		if (st.st_uid != 0) {
+			error(_("pre-existing socket directory %s not owned by root"),
+			      sockdir);
+			return -1;
+		}
+
+		if (~st.st_mode & 0022) {
+			warning(_("pre-existing socket directory %s is not world-writable %#o"),
+			        sockdir, st.st_mode & ~S_IFMT);
+		}
+
+		if ((st.st_mode & 01000) == 0) {
+			error(_("pre-existing socket directory %s is missing the sticky bit %#o"),
+			      sockdir, st.st_mode & ~S_IFMT);
+			return -1;
+		}
+	}
+
+	return 0;
+}
+
+static int
 fs_connection_setup(fs_conn &conn)
 {
 	int sd;
@@ -942,10 +992,8 @@ fs_connection_setup(fs_conn &conn)
 		sockname = s_unix.sun_path;
 
 		old_umask = umask(0);
-		if (mkdir(sockdir, 01777) < 0) {
-			error(_("cannot make socket directory %s!"), sockdir);
+		if (fs_connection_mkdir() < 0)
 			return -1;
-		}
 		unlink(s_unix.sun_path);
 
 		// prepare unix connection
