@@ -937,14 +937,6 @@ fs_connection_setup(fs_conn &conn)
 		struct sockaddr_un s_unix;
 		mode_t old_umask;
 
-		// prepare unix connection
-		sd = socket(PF_UNIX, SOCK_STREAM, 0);
-		if (sd < 0) {
-			error(_("cannot create Unix socket; %s!"),
-			      strerror(errno));
-			return -1;
-		}
-
 		s_unix.sun_family = AF_UNIX;
 		sprintf(s_unix.sun_path, "%s/fs%d", sockdir, conn.port);
 		sockname = s_unix.sun_path;
@@ -952,10 +944,17 @@ fs_connection_setup(fs_conn &conn)
 		old_umask = umask(0);
 		if (mkdir(sockdir, 01777) < 0) {
 			error(_("cannot make socket directory %s!"), sockdir);
-			close(sd);
 			return -1;
 		}
 		unlink(s_unix.sun_path);
+
+		// prepare unix connection
+		sd = socket(PF_UNIX, SOCK_STREAM, 0);
+		if (sd < 0) {
+			error(_("cannot create Unix socket; %s!"),
+			      strerror(errno));
+			return -1;
+		}
 
 		if (bind(sd, (struct sockaddr *)&s_unix, sizeof(s_unix)) < 0) {
 			error(_("could not write to %s/, please check "
