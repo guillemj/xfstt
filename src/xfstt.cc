@@ -2152,7 +2152,8 @@ main(int argc, char **argv)
 	signal_setup(SIGCHLD, SIG_IGN); // We don't need no stinkinig zombies -sjc
 	signal_setup(SIGHUP, sighup_handler);
 
-	fs_connection_setup(fs_conn);
+	if (fs_connection_setup(fs_conn) < 0)
+		return 1;
 
 	if (retry <= 0)
 		error(_("good bye"));
