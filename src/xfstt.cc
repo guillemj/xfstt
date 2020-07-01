@@ -2164,8 +2164,14 @@ main(int argc, char **argv)
 
 		if (fs_connecting(client)) {
 			if (!multiConnection || !fork()) {
-				setuid(newuid);
-				setgid(newgid);
+				if (setuid(newuid) < 0) {
+					error(_("cannot set new user id"));
+					break;
+				}
+				if (setgid(newgid) < 0) {
+					error(_("cannot set new group id"));
+					break;
+				}
 
 				Rasterizer raster;
 				client.replybuf = (char *)allocMem(MAXREPLYSIZE);
