@@ -3,7 +3,7 @@
 # xfstt configure.ac
 #
 
-AC_INIT([xfstt], [1.10])
+AC_INIT([xfstt], [1.11])
 AC_PREREQ([2.53])
 AC_CONFIG_SRCDIR([src/xfstt.cc])
 AC_CONFIG_AUX_DIR([build-aux])

@@ -1,3 +1,58 @@
+1.11 (2020-08-09)
+
+	Bug fixes and improvements:
+	 · showttf: Initialize mask to 0.
+	 · libfstt: Change "g" constraint to "rm" in muldiv() inline assembler.
+	 · libfstt: Make a dummy output for edx register in muldiv() inline
+	   assembler.
+	 · libfstt: Mark muldiv() inline assembler outputs as early clobbers.
+	 · xfstt: Fix string_token() encoding parsing
+	 · xfstt: Change message functions to print message type and package.
+	 · xfstt: Error out during start if a connection cannot be stablished.
+	 · xfstt: Error out on uid and gid change failures.
+	 · xfstt: Make sure Unix socket directory exists and has proper perms.
+	 · xfstt: Duplicate the Unix socket pathname to sockname.
+	 · xfstt: Print the full Unix socket name on permission errors
+	 · xfstt: Do remove the pidfile if not running in daemon mode.
+	 · xfstt: Print an error message on Unix socket unlink failures.
+	Documentation:
+	 · Do not capitalize xfstt.
+	 · Reformat and modernize html markup in example.
+	 · Align assignments in properties example file.
+	 · Reindent sample init script.
+	 · Mention disabled font server support on some distributions in FAQ.
+	Code cleanup:
+	 · Fix indentation
+	 · Move statements into their own lines in conditionals.
+	 · Move all thanks comments to the THANKS file.
+	 · Use C++ names for C standard headers.
+	 · Use string instead of adding an offset to a literal for the indent.
+	 · xfstt: Use a std::vector to track the socket list.
+	 · xfstt: Use an object for ttFont instead of a pointer to one.
+	 · xfstt: Use an object for Rasterizer instead of a pointer to one.
+	 · xfstt: Place boolean operators before end of line.
+	 · xfstt: Fix coding style for an array initialization.
+	 · xfstt: Move boxtable definition close to encoding definitions.
+	 · xfstt: Group encoding registry methods at the beginning.
+	 · xfstt: Reduce nesting level in --encoding parsing.
+	 · xfstt: Rework Encoding class.
+	 · xfstt: Rename file info and name variables to ttinfo and ttname.
+	 · xfstt: Reimplement the message macros as actual functions.
+	 · xfstt: Print a final newline in message functions.
+	 · xfstt: Create the Unix socket just before binding to it.
+	 · xfstt: Rework database opening and error recovery.
+	 · xfstt: Refactor server cleanup into a new function.
+	 · xfstt: Setup SIGTERM and SIGINT handlers also in non-daemon mode.
+	 · xfstt: Add debug entries on cleanup and server getting ready.
+	 · libfstt, xfstt: Use braces in all conditional branches.
+	 · libfstt: Make the asterisk hug the variable instead of the type.
+	 · libfstt: Reformat the inline assembler code in muldiv().
+	 · libfstt: Do not use dummy argument for idiv to force data type in
+	   muldiv().
+	Build system:
+	 · build: Request latest gettext available.
+	 · build: Split variable values each into their own line.
+
 1.10 (2019-02-09)
 
 	Bug fixes and improvements:
