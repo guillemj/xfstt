@@ -31,6 +31,7 @@ This FAQ is current as of version 1.10 of xfstt.
 2.15 Help! I just upgraded and the new version doesn't work!
 2.16 Xfstt is broken with Linux kernel 2.4.0!
 2.17 Xfstt will not compile on Solaris x86!
+2.18 Xfstt does not work with recent X.Org releases!
 
 3.0 How do I put fonts in categories?
 3.1 Use with Java™ 1.1 and up
@@ -351,6 +352,15 @@ This FAQ is current as of version 1.10 of xfstt.
 	I wasn't able to help them much with. If anyone gets it working, or
 	has a Solaris x86 system that I can have an account on to try and
 	get xfstt compiled... please let me know!
+
+2.18 Xfstt does not work with recent X.Org releases!
+
+	On some distributions, at least Debian and Ubuntu, recent X.Org
+	releases have the font server support disabled, so only local fonts
+	are available, and no font servers specified with the "xset" font
+	path options or on the X.Org configuration file will be honored.
+	Xfstt can still be used on these systems to serve fonts to remote
+	X11 systems.
 
 -----------------------------------------------------------------------------
 
