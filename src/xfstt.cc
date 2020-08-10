@@ -2024,7 +2024,8 @@ fs_working(fs_client &client, Rasterizer *raster)
 static void
 delPIDfile(int signal XFSTT_ATTR_UNUSED)
 {
-	unlink(pidfilename);
+	if (daemon)
+		unlink(pidfilename);
 	if (sockname) {
 		unlink(sockname);
 		rmdir(sockdir);
@@ -2190,13 +2191,15 @@ main(int argc, char **argv)
 
 		if (ttSyncAll() <= 0) {
 			error(_("cannot regenerate font database"));
-			unlink(pidfilename);
+			if (daemon)
+				unlink(pidfilename);
 			return 1;
 		}
 
 		if (openTTFdb() <= 0) {
 			error(_("cannot reopen regenerated font database"));
-			unlink(pidfilename);
+			if (daemon)
+				unlink(pidfilename);
 			return 1;
 		}
 	}
