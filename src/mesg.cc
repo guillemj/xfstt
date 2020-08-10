@@ -25,6 +25,10 @@
 #include <cstdio>
 
 #include "mesg.h"
+#include "gettext.h"
+
+#define _(str) gettext(str)
+#define N_(str) gettext_noop(str)
 
 void
 info(const char *format, ...)
@@ -32,6 +36,7 @@ info(const char *format, ...)
 	std::va_list args;
 
 	va_start(args, format);
+	std::fprintf(stdout, "%s: %s: ", PACKAGE, _("info"));
 	std::vfprintf(stdout, format, args);
 	va_end(args);
 }
@@ -42,6 +47,7 @@ warning(const char *format, ...)
 	std::va_list args;
 
 	va_start(args, format);
+	std::fprintf(stderr, "%s: %s: ", PACKAGE, _("warning"));
 	std::vfprintf(stderr, format, args);
 	va_end(args);
 }
@@ -52,6 +58,7 @@ error(const char *format, ...)
 	std::va_list args;
 
 	va_start(args, format);
+	std::fprintf(stderr, "%s: %s: ", PACKAGE, _("error"));
 	std::vfprintf(stderr, format, args);
 	va_end(args);
 }
