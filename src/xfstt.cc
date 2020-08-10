@@ -305,47 +305,47 @@ ttSyncAll(bool gslist = false)
 		return -1;
 	}
 
-	FILE *infoFile = fopen(ttinfofilename.c_str(), "wb");
-	FILE *nameFile = fopen(ttnamefilename.c_str(), "wb");
+	FILE *ttinfoFile = fopen(ttinfofilename.c_str(), "wb");
+	FILE *ttnameFile = fopen(ttnamefilename.c_str(), "wb");
 
-	if (infoFile == nullptr || nameFile == nullptr) {
-		if (infoFile)
-			fclose(infoFile);
-		if (nameFile)
-			fclose(nameFile);
+	if (ttinfoFile == nullptr || ttnameFile == nullptr) {
+		if (ttinfoFile)
+			fclose(ttinfoFile);
+		if (ttnameFile)
+			fclose(ttnameFile);
 		error(_("cannot write to font database!\n"));
 		return -1;
 	}
 
-	TTFNheader info;
-	memcpy(info.magic, "TTFN", 4);
-	info.version = TTFN_VERSION;
-	info.key = 0;	// XXX
-	info.crc = 0;	// XXX
-	memcpy(info.type, "INFO", 4);
-	fwrite((void *)&info, 1, sizeof(info), infoFile);
-	memcpy(info.type, "NAME", 4);
-	fwrite((void *)&info, 1, sizeof(info), nameFile);
+	TTFNheader ttinfo;
+	memcpy(ttinfo.magic, "TTFN", 4);
+	ttinfo.version = TTFN_VERSION;
+	ttinfo.key = 0;	// XXX
+	ttinfo.crc = 0;	// XXX
+	memcpy(ttinfo.type, "INFO", 4);
+	fwrite((void *)&ttinfo, 1, sizeof(ttinfo), ttinfoFile);
+	memcpy(ttinfo.type, "NAME", 4);
+	fwrite((void *)&ttinfo, 1, sizeof(ttinfo), ttnameFile);
 
-	int nfonts = ttSyncDir(infoFile, nameFile, ".", gslist);
+	int nfonts = ttSyncDir(ttinfoFile, ttnameFile, ".", gslist);
 
 	DIR *dirp = opendir(".");
 	if (dirp == nullptr) {
-		fclose(infoFile);
-		fclose(nameFile);
+		fclose(ttinfoFile);
+		fclose(ttnameFile);
 		return 0;
 	}
 
 	while (dirent *de = readdir(dirp)) {
 		chdir(fontdir);
 		if (de->d_name[0] != '.' && !chdir(de->d_name))
-			nfonts += ttSyncDir(infoFile, nameFile,
+			nfonts += ttSyncDir(ttinfoFile, ttnameFile,
 			                    de->d_name, gslist);
 	}
 	closedir(dirp);
 
-	fclose(infoFile);
-	fclose(nameFile);
+	fclose(ttinfoFile);
+	fclose(ttnameFile);
 
 	if (nfonts > 0) {
 		if (!gslist)
