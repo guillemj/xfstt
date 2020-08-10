@@ -2017,12 +2017,8 @@ fs_working(fs_client &client, Rasterizer *raster)
 	return 0;
 }
 
-/* This is a cheesy little signal handler to make sure that the
- * pid file is properly disposed of when we are killed
- * possibly a better (more robust) signal handler could be written - sjc
- */
 static void
-delPIDfile(int signal XFSTT_ATTR_UNUSED)
+server_cleanup()
 {
 	if (daemon)
 		unlink(pidfilename);
@@ -2030,6 +2026,12 @@ delPIDfile(int signal XFSTT_ATTR_UNUSED)
 		unlink(sockname);
 		rmdir(sockdir);
 	}
+}
+
+static void
+sigterm_handler(int signal XFSTT_ATTR_UNUSED)
+{
+	server_cleanup();
 	exit(0);
 }
 
@@ -2177,9 +2179,8 @@ main(int argc, char **argv)
 			pid_t pid = getpid();
 			fprintf(pidfile, "%d\n", pid);
 			fclose(pidfile);
-
-			signal_setup(SIGINT, delPIDfile);
-			signal_setup(SIGTERM, delPIDfile);
+			signal_setup(SIGINT, sigterm_handler);
+			signal_setup(SIGTERM, sigterm_handler);
 		}
 	}
 
@@ -2250,12 +2251,8 @@ main(int argc, char **argv)
 		close(client.sd);
 	} while (multiConnection);
 
-	if (sockname) {
-		unlink(sockname);
-		rmdir(sockdir);
-	}
-
 	debug("xfstt: server down\n");
+	server_cleanup();
 	cleanupMem();
 
 	return 0;
