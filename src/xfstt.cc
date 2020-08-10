@@ -2179,10 +2179,10 @@ main(int argc, char **argv)
 			pid_t pid = getpid();
 			fprintf(pidfile, "%d\n", pid);
 			fclose(pidfile);
-			signal_setup(SIGINT, sigterm_handler);
-			signal_setup(SIGTERM, sigterm_handler);
 		}
 	}
+	signal_setup(SIGINT, sigterm_handler);
+	signal_setup(SIGTERM, sigterm_handler);
 
 	if (openTTFdb() <= 0) {
 		closeTTFdb();
