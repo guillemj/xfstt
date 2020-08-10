@@ -989,7 +989,7 @@ fs_connection_setup(fs_conn &conn)
 
 		s_unix.sun_family = AF_UNIX;
 		sprintf(s_unix.sun_path, "%s/fs%d", sockdir, conn.port);
-		sockname = s_unix.sun_path;
+		sockname = strdup(s_unix.sun_path);
 
 		old_umask = umask(0);
 		if (fs_connection_mkdir() < 0)
