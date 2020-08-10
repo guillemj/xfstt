@@ -38,6 +38,7 @@ info(const char *format, ...)
 	va_start(args, format);
 	std::fprintf(stdout, "%s: %s: ", PACKAGE, _("info"));
 	std::vfprintf(stdout, format, args);
+	std::fputs("\n", stdout);
 	va_end(args);
 }
 
@@ -49,6 +50,7 @@ warning(const char *format, ...)
 	va_start(args, format);
 	std::fprintf(stderr, "%s: %s: ", PACKAGE, _("warning"));
 	std::vfprintf(stderr, format, args);
+	std::fputs("\n", stderr);
 	va_end(args);
 }
 
@@ -60,5 +62,6 @@ error(const char *format, ...)
 	va_start(args, format);
 	std::fprintf(stderr, "%s: %s: ", PACKAGE, _("error"));
 	std::vfprintf(stderr, format, args);
+	std::fputs("\n", stderr);
 	va_end(args);
 }

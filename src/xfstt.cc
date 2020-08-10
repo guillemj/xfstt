@@ -185,7 +185,7 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 	int ttdir_len = strlen(ttdir);
 
 	if (!gslist)
-		info(_("Sync in directory \"%s/%s\".\n"), fontdir, ttdir);
+		info(_("Sync in directory \"%s/%s\"."), fontdir, ttdir);
 
 	DIR *dirp = opendir(".");
 	if (dirp == nullptr)
@@ -275,11 +275,11 @@ cachefile(string leafname)
 	struct stat statbuf;
 
 	if (stat(cachedir, &statbuf)) {
-		error(_("directory \"%s\" does not exist!\n"), cachedir);
+		error(_("directory \"%s\" does not exist!"), cachedir);
 		return string();
 	}
 	if (!S_ISDIR(statbuf.st_mode)) {
-		error(_("\"%s\" is not a directory!\n"), cachedir);
+		error(_("\"%s\" is not a directory!"), cachedir);
 		return string();
 	}
 
@@ -293,7 +293,7 @@ ttSyncAll(bool gslist = false)
 		debug("TrueType syncing\n");
 
 	if (chdir(fontdir)) {
-		error(_("directory \"%s\" does not exist!\n"), fontdir);
+		error(_("directory \"%s\" does not exist!"), fontdir);
 		return -1;
 	}
 
@@ -313,7 +313,7 @@ ttSyncAll(bool gslist = false)
 			fclose(ttinfoFile);
 		if (ttnameFile)
 			fclose(ttnameFile);
-		error(_("cannot write to font database!\n"));
+		error(_("cannot write to font database!"));
 		return -1;
 	}
 
@@ -349,10 +349,10 @@ ttSyncAll(bool gslist = false)
 
 	if (nfonts > 0) {
 		if (!gslist)
-			info(_("Found %d fonts.\n"), nfonts);
+			info(_("Found %d fonts."), nfonts);
 	} else {
-		error(_("no valid truetype fonts found!\n"));
-		info(_("Please put some *.ttf fonts into \"%s\".\n"), fontdir);
+		error(_("no valid truetype fonts found!"));
+		info(_("Please put some *.ttf fonts into \"%s\"."), fontdir);
 	}
 
 	return nfonts;
@@ -575,7 +575,7 @@ openFont(TTFont *ttFont, FontParams *fp, Rasterizer *raster,
 	xfs->fe.buflen = MAXFONTBUFSIZE;
 	while (!(xfs->fe.buffer = (uint8_t *)allocMem(xfs->fe.buflen)))
 		if ((xfs->fe.buflen >>= 1) < MINFONTBUFSIZE) {
-			error(_("entering memory starved mode.\n"));
+			error(_("entering memory starved mode"));
 			xfs->fid = 0;	// Mark font slot as not used.
 			delete ttFont;
 			return nullptr;
@@ -782,7 +782,7 @@ openTTFdb()
 	infoSize = nameSize = 0;
 
 	if (chdir(fontdir)) {
-		error(_("directory \"%s\" does not exist!\n"), fontdir);
+		error(_("directory \"%s\" does not exist!"), fontdir);
 		return 0;
 	}
 
@@ -792,13 +792,13 @@ openTTFdb()
 
 	int fd = open(ttinfofilename.c_str(), O_RDONLY);
 	if (fd < 0) {
-		error(_("cannot open font database!\n"));
+		error(_("cannot open font database!"));
 		return 0;
 	}
 
 	struct stat statbuf;
 	if (fstat(fd, &statbuf) < 0) {
-		error(_("cannot stat fond database!\n"));
+		error(_("cannot stat fond database!"));
 		close(fd);
 		return 0;
 	}
@@ -807,18 +807,18 @@ openTTFdb()
 	close(fd);
 
 	if (infoBase == MAP_FAILED) {
-		error(_("cannot mmap font database!\n"));
+		error(_("cannot mmap font database!"));
 		return 0;
 	}
 
 	if (infoSize <= sizeof(TTFNheader) ||
 	    strncmp(infoBase, "TTFNINFO", 8)) {
-		error(_("corrupt font database!\n"));
+		error(_("corrupt font database!"));
 		return 0;
 	}
 
 	if (((TTFNheader *)infoBase)->version != TTFN_VERSION) {
-		error(_("wrong font database version!\n"));
+		error(_("wrong font database version!"));
 		return 0;
 	}
 
@@ -828,12 +828,12 @@ openTTFdb()
 
 	fd = open(ttnamefilename.c_str(), O_RDONLY);
 	if (fd < 0) {
-		error(_("cannot open font database!\n"));
+		error(_("cannot open font database!"));
 		return 0;
 	}
 
 	if (fstat(fd, &statbuf) < 0) {
-		error(_("cannot stat font database!\n"));
+		error(_("cannot stat font database!"));
 		close(fd);
 		return 0;
 	}
@@ -842,18 +842,18 @@ openTTFdb()
 	close(fd);
 
 	if (nameBase == MAP_FAILED) {
-		error(_("cannot mmap font database!\n"));
+		error(_("cannot mmap font database!"));
 		return 0;
 	}
 
 	if (nameSize <= sizeof(TTFNheader) ||
 	    strncmp(nameBase, "TTFNNAME", 8)) {
-		error(_("corrupt font database!\n"));
+		error(_("corrupt font database!"));
 		return 0;
 	}
 
 	if (((TTFNheader *)nameBase)->version != TTFN_VERSION) {
-		error(_("wrong font database version!\n"));
+		error(_("wrong font database version!"));
 		return 0;
 	}
 
@@ -897,14 +897,14 @@ fs_connection_setup_inet(fs_conn &conn, struct addrinfo *res)
 #if defined(HAVE_IPV6_V6ONLY)
 		if (res->ai_family == PF_INET6 &&
 		    setsockopt(sd, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(on)) < 0) {
-			error(_("setting socket option (IPv6 only).\n"));
+			error(_("setting socket option (IPv6 only)"));
 			close(sd);
 			continue;
 		}
 #endif
 
 		if (setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
-			error(_("setting socket option (reuseaddr).\n"));
+			error(_("setting socket option (reuseaddr)"));
 			close(sd);
 			continue;
 		}
@@ -920,7 +920,7 @@ fs_connection_setup_inet(fs_conn &conn, struct addrinfo *res)
 	}
 
 	if (!inet_ports) {
-		error(_("cannot open TCP/IP port %d, try another port; %s!\n"),
+		error(_("cannot open TCP/IP port %d, try another port; %s!"),
 		      conn.port, strerror(errno));
 		return false;
 	} else
@@ -940,7 +940,7 @@ fs_connection_setup(fs_conn &conn)
 		// prepare unix connection
 		sd = socket(PF_UNIX, SOCK_STREAM, 0);
 		if (sd < 0) {
-			error(_("cannot create Unix socket; %s!\n"),
+			error(_("cannot create Unix socket; %s!"),
 			      strerror(errno));
 			return -1;
 		}
@@ -951,7 +951,7 @@ fs_connection_setup(fs_conn &conn)
 
 		old_umask = umask(0);
 		if (mkdir(sockdir, 01777) < 0) {
-			error(_("cannot make socket directory %s!\n"), sockdir);
+			error(_("cannot make socket directory %s!"), sockdir);
 			close(sd);
 			return -1;
 		}
@@ -959,7 +959,7 @@ fs_connection_setup(fs_conn &conn)
 
 		if (bind(sd, (struct sockaddr *)&s_unix, sizeof(s_unix)) < 0) {
 			error(_("could not write to %s/, please check "
-			      "permissions.\n"), sockdir);
+			        "permissions"), sockdir);
 			close(sd);
 			return -1;
 		} else {
@@ -1005,7 +1005,7 @@ fs_connection_setup(fs_conn &conn)
 
 		if (bind(sd, (struct sockaddr *)&s_inet, sizeof(s_inet)) < 0) {
 			error(_("cannot open TCP/IP port %d, "
-				"try another port; %s!\n"), conn.port,
+				"try another port; %s!"), conn.port,
 				strerror(errno));
 			close(sd);
 			return -1;
@@ -1068,7 +1068,7 @@ fs_connecting(fs_client &client)
 		return 0;
 
 	if (req->byteOrder != 'l' && req->byteOrder != 'B') {
-		error(_("invalid byteorder, giving up.\n"));
+		error(_("invalid byteorder, giving up"));
 		return 0;
 	}
 
@@ -1079,7 +1079,7 @@ fs_connecting(fs_client &client)
 	if ((req->byteOrder == 'l' && (*(uint32_t *)req & 0xff) != 'l') ||
 	    (req->byteOrder == 'B' && ((*(uint32_t *)req >> 24) & 0xff) != 'B'))
 	{
-		error(_("byteorder mismatch, giving up.\n"));
+		error(_("byteorder mismatch, giving up"));
 		return 0;
 	}
 
@@ -1117,7 +1117,7 @@ fixup_bitmap(FontExtent *fe, uint32_t hint)
 	int format = ((hint >> 8) & 3) + 3;
 	if (format < LOGSLP) {
 		error(_("scanline length error! recompile xfstt with LOGSLP "
-		      "defined as %d!\n"), format <= 3 ? 3 : format);
+		        "defined as %d!"), format <= 3 ? 3 : format);
 	}
 
 	if ((hint ^ fe->bmpFormat) == 0)
@@ -2044,7 +2044,7 @@ main(int argc, char **argv)
 			if (i <= argc)
 				fs_conn.port = xatoi(argv[++i]);
 			if (!fs_conn.port) {
-				error(_("illegal port number!\n"));
+				error(_("illegal port number!"));
 				fs_conn.port = default_port;
 			}
 		} else if (!strcmp(argv[i], "--notcp")) {
@@ -2053,7 +2053,7 @@ main(int argc, char **argv)
 			if (i <= argc)
 				defaultres = xatoi(argv[++i]);
 			if (!defaultres)
-				error(_("illegal default resolution!\n"));
+				error(_("illegal default resolution!"));
 		} else if (!strcmp(argv[i], "--dir")) {
 			fontdir = argv[++i];
 		} else if (!strcmp(argv[i], "--user")) {
@@ -2067,11 +2067,11 @@ main(int argc, char **argv)
 			if (encodings.parse(maplist) > 0)
 				continue;
 
-			error(_("illegal encoding!\n"));
-			info(_("valid encodings are:\n"));
+			error(_("illegal encoding!"));
+			info(_("valid encodings are:"));
 			EncodingsRegistry::iterator iter;
 			for (iter = EncodingsRegistry::begin(); iter != EncodingsRegistry::end(); ++iter) {
-				info("\t%s\n", (*iter)->Name.c_str());
+				info("\t%s", (*iter)->Name.c_str());
 			}
 			exit(0);
 		} else if (!strcmp(argv[i], "--help")) {
@@ -2088,7 +2088,7 @@ main(int argc, char **argv)
 		} else if (!strcmp(argv[i], "--unstrap")) {
 			maxLastChar = UNSTRAPLIMIT;
 			warning(_("[unstrapped] you must start X11 with "
-				"\"-deferglyphs 16\" option!\n"));
+				"\"-deferglyphs 16\" option!"));
 		} else if (!strcmp(argv[i], "--daemon")) {
 			daemon = 1;
 		} else {
@@ -2099,7 +2099,7 @@ main(int argc, char **argv)
 
 	if (sync_db) {
 		if (ttSyncAll(gslist) <= 0)
-			error(_("sync failed.\n"));
+			error(_("sync failed"));
 		cleanupMem();
 		return 0;
 	}
@@ -2142,11 +2142,11 @@ main(int argc, char **argv)
 		closeTTFdb();
 
 		error(_("opening TTF database failed, while reading \"%s\" "
-		      "to build it.\n"), fontdir);
+		        "to build it"), fontdir);
 
 		if (ttSyncAll() > 0 && openTTFdb() > 0)
 			break;
-		error(_("creating a font database failed.\n"));
+		error(_("creating a font database failed"));
 		unlink(pidfilename);
 	}
 
@@ -2156,7 +2156,7 @@ main(int argc, char **argv)
 	fs_connection_setup(fs_conn);
 
 	if (retry <= 0)
-		error(_("good bye.\n"));
+		error(_("good bye"));
 	else do {
 		fs_client client;
 
