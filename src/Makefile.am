@@ -30,6 +30,7 @@ xfstt_SOURCES = \
 	ttfn.h \
 	encoding.cc \
 	encoding.h \
+	mesg.cc \
 	mesg.h \
 	gettext.h \
 	$(nil)
