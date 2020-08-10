@@ -2020,6 +2020,7 @@ fs_working(fs_client &client, Rasterizer *raster)
 static void
 server_cleanup()
 {
+	debug("xfstt: cleaning up\n");
 	if (daemon)
 		unlink(pidfilename);
 	if (sockname) {
@@ -2210,6 +2211,8 @@ main(int argc, char **argv)
 
 	if (fs_connection_setup(fs_conn) < 0)
 		return 1;
+
+	debug("xfstt: server ready\n");
 
 	do {
 		fs_client client;
