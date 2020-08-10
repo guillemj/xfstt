@@ -2024,7 +2024,9 @@ server_cleanup()
 	if (daemon)
 		unlink(pidfilename);
 	if (sockname) {
-		unlink(sockname);
+		if (unlink(sockname) < 0)
+			error(_("cannot remove sockfile %s: %s"), sockname,
+			      strerror(errno));
 		rmdir(sockdir);
 	}
 }
