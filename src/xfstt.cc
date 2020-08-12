@@ -2134,19 +2134,23 @@ main(int argc, char **argv)
 		}
 	}
 
-	int retry;
-	for (retry = 1; retry > 0; --retry) {
-		if (openTTFdb() > 0)
-			break;
+	if (openTTFdb() <= 0) {
 		closeTTFdb();
 
-		error(_("opening TTF database failed, while reading \"%s\" "
-		        "to build it"), fontdir);
+		warning(_("opening font database failed, while reading \"%s\" "
+		          "to build it; trying to regenerate it"), fontdir);
 
-		if (ttSyncAll() > 0 && openTTFdb() > 0)
-			break;
-		error(_("creating a font database failed"));
-		unlink(pidfilename);
+		if (ttSyncAll() <= 0) {
+			error(_("cannot regenerate font database"));
+			unlink(pidfilename);
+			return 1;
+		}
+
+		if (openTTFdb() <= 0) {
+			error(_("cannot reopen regenerated font database"));
+			unlink(pidfilename);
+			return 1;
+		}
 	}
 
 	signal_setup(SIGCHLD, SIG_IGN); // We don't need no stinkinig zombies -sjc
@@ -2155,9 +2159,7 @@ main(int argc, char **argv)
 	if (fs_connection_setup(fs_conn) < 0)
 		return 1;
 
-	if (retry <= 0)
-		error(_("good bye"));
-	else do {
+	do {
 		fs_client client;
 
 		client.sd = inetdConnection ? 0 : fs_connection_new(fs_conn);
