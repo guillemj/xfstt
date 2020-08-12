@@ -2,7 +2,7 @@
  * Test ttf engine performance
  *
  * Copyright © 1997-1998 Herbert Duerr
- * Copyright © 2008 Guillem Jover
+ * Copyright © 2008-2009, 2012, 2016, 2018-2019 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

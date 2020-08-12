@@ -2,7 +2,7 @@
  * Remap from unicode to other encodings
  *
  * Copyright © 1998 Herbert Duerr
- * Copyright © 2008 Guillem Jover
+ * Copyright © 2007-2009, 2018-2020 Guillem Jover
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
