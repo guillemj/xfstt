@@ -1005,8 +1005,8 @@ fs_connection_setup(fs_conn &conn)
 		}
 
 		if (bind(sd, (struct sockaddr *)&s_unix, sizeof(s_unix)) < 0) {
-			error(_("could not write to %s/, please check "
-			        "permissions"), sockdir);
+			error(_("could not write to %s, please check "
+			        "permissions"), sockname);
 			close(sd);
 			return -1;
 		} else {
