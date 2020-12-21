@@ -99,6 +99,7 @@ static char *infoBase, *nameBase;
 static const char *fontdir = FONTDIR;
 static const char *cachedir = CACHEDIR;
 static const char *pidfilename = PIDFILE;
+static bool daemonize = false;
 
 static int defaultres = 0;
 static const int default_port = 7101;
@@ -2021,7 +2022,7 @@ static void
 server_cleanup()
 {
 	debug("xfstt: cleaning up\n");
-	if (daemon)
+	if (daemonize)
 		unlink(pidfilename);
 	if (sockname) {
 		if (unlink(sockname) < 0)
@@ -2077,7 +2078,6 @@ main(int argc, char **argv)
 	bool inetdConnection = false;
 	bool gslist = false;
 	bool sync_db = false;
-	bool daemon = false;
 	fs_conn fs_conn;
 
 	setlocale(LC_ALL, "");
@@ -2143,7 +2143,7 @@ main(int argc, char **argv)
 			warning(_("[unstrapped] you must start X11 with "
 				"\"-deferglyphs 16\" option!"));
 		} else if (!strcmp(argv[i], "--daemon")) {
-			daemon = 1;
+			daemonize = true;
 		} else {
 			usage(0);
 			return -1;
@@ -2157,7 +2157,7 @@ main(int argc, char **argv)
 		return 0;
 	}
 
-	if (daemon) {
+	if (daemonize) {
 		if (fork())
 			_exit(0);
 		fclose(stdin);
@@ -2175,7 +2175,7 @@ main(int argc, char **argv)
 
 	// Make a pid file for easy starting and killing like
 	// a good little daemon
-	if (daemon) {
+	if (daemonize) {
 		FILE *pidfile = fopen(pidfilename, "w");
 
 		if (pidfile) {
@@ -2195,14 +2195,14 @@ main(int argc, char **argv)
 
 		if (ttSyncAll() <= 0) {
 			error(_("cannot regenerate font database"));
-			if (daemon)
+			if (daemonize)
 				unlink(pidfilename);
 			return 1;
 		}
 
 		if (openTTFdb() <= 0) {
 			error(_("cannot reopen regenerated font database"));
-			if (daemon)
+			if (daemonize)
 				unlink(pidfilename);
 			return 1;
 		}
