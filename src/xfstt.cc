@@ -222,7 +222,7 @@ ttSyncDir(FILE *infoFile, FILE *nameFile, const char *ttdir, bool gslist)
 		FontInfo fi;
 		ttFont.getFontInfo(&fi);
 
-		TTFNdata info = { 0 };
+		TTFNdata info = { };
 		info.nameOfs = ftell(nameFile);
 		info.nameLen = fi.faceLength;
 		info.pathLen = strlen(pathName);
@@ -1130,7 +1130,7 @@ fs_connecting(fs_client &client)
 		return 0;
 	}
 
-	fsConnSetup replySetup = { 0 };
+	fsConnSetup replySetup = { };
 	replySetup.status = 0;
 	replySetup.major_version = 2;
 	replySetup.minor_version = 0;
@@ -1144,7 +1144,7 @@ fs_connecting(fs_client &client)
 	struct {
 		fsConnSetupAccept s1;
 		char vendor[2], pad[2];
-	} replyAccept = { 0 };
+	} replyAccept = { };
 
 	replyAccept.s1.length = (sizeof(replyAccept) + 3) >> 2;
 	replyAccept.s1.max_request_len = MAXREQSIZE >> 2;
@@ -1250,7 +1250,7 @@ fixup_bitmap(FontExtent *fe, uint32_t hint)
 static int
 fs_client_error(fs_client &client, int error)
 {
-	fsError reply = { 0 };
+	fsError reply = { };
 
 	reply.type = FS_Error;
 	reply.request = error;
@@ -1329,7 +1329,7 @@ fs_list_extensions(fs_client &client)
 {
 	debug("FS_ListExtensions\n");
 
-	fsListExtensionsReply reply = { 0 };
+	fsListExtensionsReply reply = { };
 	reply.type = FS_Reply;
 	reply.nExtensions = 0;
 	reply.sequenceNumber = client.seqno;
@@ -1343,7 +1343,7 @@ fs_query_extensions(fs_client &client)
 {
 	debug("FS_QueryExtension\n");
 
-	fsQueryExtensionReply reply = { 0 };
+	fsQueryExtensionReply reply = { };
 	reply.type = FS_Reply;
 	reply.present = 0;
 	reply.sequenceNumber = client.seqno;
@@ -1364,7 +1364,7 @@ fs_list_catalogues(fs_client &client)
 {
 	debug("FS_ListCatalogues\n");
 
-	fsListCataloguesReply reply = { 0 };
+	fsListCataloguesReply reply = { };
 	reply.type = FS_Reply;
 	reply.sequenceNumber = client.seqno;
 	reply.length = sizeof(reply) >> 2;
@@ -1388,7 +1388,7 @@ fs_get_catalogues(fs_client &client)
 {
 	debug("FS_GetCatalogues\n");
 
-	fsGetCataloguesReply reply = { 0 };
+	fsGetCataloguesReply reply = { };
 	reply.type = FS_Reply;
 	reply.num_catalogues = 0;
 	reply.sequenceNumber = client.seqno;
@@ -1410,7 +1410,7 @@ fs_get_event_mask(fs_client &client)
 {
 	debug("FS_GetEventMask = %04X\n", client.event_mask);
 
-	fsGetEventMaskReply reply = { 0 };
+	fsGetEventMaskReply reply = { };
 	reply.type = FS_Reply;
 	reply.sequenceNumber = client.seqno;
 	reply.length = sizeof(reply) >> 2;
@@ -1424,7 +1424,7 @@ fs_create_ac(fs_client &client)
 {
 	debug("FS_CreateAC\n");
 
-	fsCreateACReply reply = { 0 };
+	fsCreateACReply reply = { };
 	reply.type = FS_Reply;
 	reply.auth_index = 0;
 	reply.sequenceNumber = client.seqno;
@@ -1439,7 +1439,7 @@ fs_free_ac(fs_client &client)
 {
 	debug("FS_FreeAC\n");
 
-	fsGenericReply reply = { 0 };
+	fsGenericReply reply = { };
 	reply.type = FS_Reply;
 	reply.sequenceNumber = client.seqno;
 	reply.length = sizeof(reply) >> 2;
@@ -1489,7 +1489,7 @@ fs_get_resolution(fs_client &client, FontParams &fp0)
 		fsGetResolutionReply s1;
 		fsResolution s2;
 		char pad[2];
-	} reply = { 0 };
+	} reply = { };
 
 	reply.s1.type = FS_Reply;
 	reply.s1.num_resolutions = 1;
@@ -1515,7 +1515,7 @@ fs_list_fonts(fs_client &client)
 	pattern[req->nbytes] = 0;
 	debug("FS_ListFonts \"%s\" * %u\n", pattern, req->maxNames);
 
-	fsListFontsReply reply = { 0 };
+	fsListFontsReply reply = { };
 	reply.type = FS_Reply;
 	reply.sequenceNumber = client.seqno;
 	// XXX: XFree doesn't handle split up replies yet
@@ -1566,7 +1566,7 @@ fs_list_fonts_with_x_info(fs_client &client)
 	debug("FS_ListFontsWithXInfo\n");
 
 #if 0 // XFSTT_X_COMPLIANT
-	fsListFontsWithXInfoReply reply = { 0 };
+	fsListFontsWithXInfoReply reply = { };
 	reply.type = FS_Reply;
 	reply.nameLength = 0;
 	reply.sequenceNumber = client.seqno;
@@ -1595,7 +1595,7 @@ fs_open_bitmap_font(fs_client &client, FontParams &fp0, Rasterizer *raster)
 	FontParams fp = fp0;
 	if (openTTFN(raster, fontName, &fp, req->fid) ||
 	    openXLFD(raster, fontName, &fp, req->fid)) {
-		fsOpenBitmapFontReply reply = { 0 };
+		fsOpenBitmapFontReply reply = { };
 		reply.type = FS_Reply;
 		reply.otherid_valid = fsFalse;
 		reply.sequenceNumber = client.seqno;
@@ -1625,7 +1625,7 @@ fs_query_x_info(fs_client &client)
 		fsPropInfo s2;
 		fsPropOffset s3;
 		uint32_t dummyName, dummyValue;
-	} reply = { 0 };
+	} reply = { };
 
 	reply.s1.type = FS_Reply;
 	reply.s1.sequenceNumber = client.seqno;
@@ -1749,7 +1749,7 @@ fs_query_x_extents(fs_client &client)
 		while (--nranges >= 0)
 			(ext++)->left = ntohs(*(ptr++));
 
-	fsQueryXExtents16Reply reply = { 0 };
+	fsQueryXExtents16Reply reply = { };
 	reply.type = FS_Reply;
 	reply.sequenceNumber = client.seqno;
 	reply.num_extents = ext - ext0;
@@ -1843,7 +1843,7 @@ fs_query_x_bitmaps(fs_client &client)
 		while (--nranges >= 0)
 			(ofs++)->position = ntohs(*(ptr++));
 
-	fsQueryXBitmaps16Reply reply = { 0 };
+	fsQueryXBitmaps16Reply reply = { };
 	reply.type = FS_Reply;
 	reply.sequenceNumber = client.seqno;
 	reply.num_chars = ofs - ofs0;
