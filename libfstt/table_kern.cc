@@ -23,7 +23,7 @@
 
 KernTable::KernTable(RandomAccessFile &f, int offset, int length):
 	RandomAccessFile(f, offset, length),
-	kernOffset(0)
+	kernOffset(), nPairs(), kernLength(), coverage()
 {
 	/* version = */ readUShort();
 	int16_t nTables = readSShort();

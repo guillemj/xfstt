@@ -22,7 +22,9 @@
 #include "ttf.h"
 
 HeadTable::HeadTable(RandomAccessFile &f, int offset, int length):
-	RandomAccessFile(f, offset, length)
+	RandomAccessFile(f, offset, length),
+	flags(), emUnits(), xmin(), ymin(), xmax(), ymax(),
+	macStyle(), lowestPP(), locaMode()
 {
 	/* version = */ readUInt();
 	/* revision = */ readUInt();

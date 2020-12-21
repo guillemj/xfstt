@@ -23,8 +23,8 @@
 
 GlyphTable::GlyphTable(RandomAccessFile &f, int offset, int length):
 	RandomAccessFile(f, offset, length),
-	xmin(0), codeOffset(0), codeLength(0),
-	nEndPoints(0), endPoints(nullptr), nPoints(0), points(nullptr)
+	xmin(), codeOffset(), codeLength(),
+	nEndPoints(), endPoints(), nPoints(), points()
 {
 }
 

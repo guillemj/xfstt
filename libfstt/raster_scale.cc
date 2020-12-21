@@ -26,10 +26,17 @@ Rasterizer::Rasterizer(int _grid_fitting, int _anti_aliasing,
                        int _sizeTwilight, int _sizePoints, int _sizeContours,
                        int _sizeStack, int _sizeCvt, int _sizeStor,
                        int _sizeFDefs):
-	stackbase(nullptr), ttFont(nullptr), status(INVALID_FONT),
-	sizeContours(_sizeContours), sizeStack(_sizeStack), sizeCvt(_sizeCvt),
-	sizeStor(_sizeStor), sizeFDefs(_sizeFDefs), sizeIDefs(0),
+	stack(), stackbase(),
+	p(), endPoints(), nPoints(), nEndPoints(),
+	cvt(), stor(), fdefs(), idefs(),
+	ttFont(), flags(), status(INVALID_FONT),
+	sizePoints(), sizeContours(_sizeContours), sizeStack(_sizeStack),
+	sizeCvt(_sizeCvt), sizeStor(_sizeStor), sizeFDefs(_sizeFDefs),
+	sizeIDefs(),
+	xx(), xy(), yx(), yy(), xxexp(), pointSize(),
+	mppem(), mppemx(), mppemy(),
 	format(LOGSLP - 3),
+	width(), height(), length(), dX(),
 	grid_fitting(_grid_fitting), anti_aliasing(_anti_aliasing)
 {
 	sizePoints[0] = _sizeTwilight;

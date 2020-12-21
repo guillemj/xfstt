@@ -24,7 +24,8 @@
 
 CmapTable::CmapTable(RandomAccessFile &f, int offset, int length):
 	RandomAccessFile(f, offset, length),
-	format(-1), subtableOffset(0)
+	format(-1), subtableOffset(),
+	f4NSegments(), f6FirstCode(), f6EntryCount()
 {
 	/* version = */ readUShort();
 	int16_t nSubTables = readSShort();

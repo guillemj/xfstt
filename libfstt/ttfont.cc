@@ -26,15 +26,15 @@
 
 TTFont::TTFont(const char *fileName, int infoOnly):
 	RandomAccessFile(fileName),
-	nameTable(nullptr), headTable(nullptr), maxpTable(nullptr),
-	cmapTable(nullptr), locaTable(nullptr), glyphTable(nullptr),
-	fpgmTable(nullptr), prepTable(nullptr), cvtTable(nullptr),
-	hheaTable(nullptr), hmtxTable(nullptr), os2Table(nullptr),
-	ltshTable(nullptr), hdmxTable(nullptr), vdmxTable(nullptr),
-	gaspTable(nullptr), kernTable(nullptr), //postTable(nullptr),
-	ebdtTable(nullptr), eblcTable(nullptr),
-	mortTable(nullptr), vheaTable(nullptr),
-	endPoints(nullptr), points(nullptr)
+	nameTable(), headTable(), maxpTable(),
+	cmapTable(), locaTable(), glyphTable(),
+	fpgmTable(), prepTable(), cvtTable(),
+	hheaTable(), hmtxTable(), os2Table(),
+	ltshTable(), hdmxTable(), vdmxTable(),
+	gaspTable(), kernTable(), //postTable(),
+	ebdtTable(), eblcTable(),
+	mortTable(), vheaTable(),
+	endPoints(), points()
 {
 	debug("TTFont(\"%s\");\n", fileName);
 

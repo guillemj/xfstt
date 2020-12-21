@@ -22,7 +22,8 @@
 #include "ttf.h"
 
 LocaTable::LocaTable(RandomAccessFile &f, int offset, int length):
-	RandomAccessFile(f, offset, length)
+	RandomAccessFile(f, offset, length),
+	maxGlyph(), isShort()
 {
 }
 
