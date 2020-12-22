@@ -94,7 +94,7 @@ EncodingsActive::parse(string mapnames)
 }
 
 Encoding *
-EncodingsActive::operator[](int idx)
+EncodingsActive::operator[](size_t idx)
 {
 	if (idx > encodings.size())
 		return encodings[0];

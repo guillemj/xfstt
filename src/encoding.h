@@ -60,7 +60,7 @@ public:
 
 	int parse(string mapnames);
 
-	Encoding *operator[](int idx);
+	Encoding *operator[](size_t idx);
 
 	typedef std::vector<Encoding *>::iterator iterator;
 	iterator begin();

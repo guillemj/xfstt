@@ -1064,7 +1064,7 @@ fs_connection_setup(fs_conn &conn)
 
 	conn.sd_max = 0;
 
-	for (int n = 0; n < conn.sd_list.size(); n++) {
+	for (size_t n = 0; n < conn.sd_list.size(); n++) {
 		if (conn.sd_list[n] > conn.sd_max)
 			conn.sd_max = conn.sd_list[n];
 	}
@@ -1077,7 +1077,7 @@ fs_connection_setup(fs_conn &conn)
 static int
 fs_connection_new(fs_conn &conn)
 {
-	int n;
+	size_t n;
 	fd_set sd_set;
 
 	FD_ZERO(&sd_set);
