@@ -33,10 +33,6 @@ AS_IF([test "x$with_xcb" != "xno"],
       [PKG_CHECK_MODULES(XCB, [xproto xcb xcb-keysyms xcb-image])])
 
 # Checks for header files.
-AC_HEADER_DIRENT
-AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([fcntl.h netinet/in.h sys/socket.h sys/time.h unistd.h])
-
 AC_CHECK_DECL([PF_INET6],
 	      [AC_DEFINE([HAVE_IPV6], [1],
 			 [The system has IPv6 support.])],
@@ -59,11 +55,6 @@ AC_TYPE_SIZE_T
 AC_SYS_LARGEFILE
 
 # Checks for library functions.
-AC_FUNC_FORK
-AC_FUNC_MALLOC
-AC_FUNC_MMAP
-AC_FUNC_STAT
-AC_CHECK_FUNCS([gettimeofday pathconf munmap mkdir rmdir select socket])
 
 # Checks for i18n
 AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.7])
