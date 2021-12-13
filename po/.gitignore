@@ -1,9 +1,9 @@
+*.header
+*.sed
+*.sin
 Makefile.in.in
 Makevars.template
 POTFILES
 Rules-quot
-*.sed
-*.sin
-*.header
 stamp-po
 xfstt.pot

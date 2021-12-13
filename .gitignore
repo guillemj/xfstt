@@ -1,13 +1,13 @@
+*.a
+*.o
 .deps
 ABOUT-NLS
 Makefile
 Makefile.in
-autom4te.cache
 aclocal.m4
+autom4te.cache
 build-aux
-configure
 config.*
+configure
 m4
 stamp-h1
-*.o
-*.a
